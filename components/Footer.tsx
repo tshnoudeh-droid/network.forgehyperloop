@@ -7,7 +7,7 @@ export default function Footer({ theme }: FooterProps) {
   const isDark = theme === "dark";
 
   const linkStyle = {
-    color: isDark ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.45)",
+    color: isDark ? "rgba(203,201,196,0.55)" : "rgba(14,14,12,0.5)",
     textDecoration: "none" as const,
     fontSize: "0.7rem",
     letterSpacing: "0.06em",
@@ -18,7 +18,7 @@ export default function Footer({ theme }: FooterProps) {
     <footer
       id="footer"
       style={{
-        background: isDark ? "#0A0A0A" : "#E8E8E3",
+        background: isDark ? "#0E0E0C" : "#F5F3F0",
         borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.08)"}`,
         padding: "60px 5vw",
         display: "flex",
@@ -44,7 +44,7 @@ export default function Footer({ theme }: FooterProps) {
               fontWeight: 700,
               letterSpacing: "0.22em",
               textTransform: "uppercase",
-              color: isDark ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.8)",
+              color: isDark ? "rgba(203,201,196,0.9)" : "rgba(14,14,12,0.85)",
               marginBottom: 6,
             }}
           >
@@ -55,7 +55,7 @@ export default function Footer({ theme }: FooterProps) {
               fontSize: "0.55rem",
               letterSpacing: "0.14em",
               textTransform: "uppercase",
-              color: isDark ? "rgba(255,215,0,0.45)" : "rgba(184,135,10,0.6)",
+              color: isDark ? "rgba(195,169,132,0.65)" : "rgba(195,169,132,0.8)",
             }}
           >
             Network Simulation
@@ -98,7 +98,7 @@ export default function Footer({ theme }: FooterProps) {
           style={{
             fontSize: "0.62rem",
             letterSpacing: "0.08em",
-            color: isDark ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.3)",
+            color: isDark ? "rgba(203,201,196,0.35)" : "rgba(14,14,12,0.3)",
           }}
         >
           Built by Tawfic Alexander Shnoudeh
@@ -107,7 +107,7 @@ export default function Footer({ theme }: FooterProps) {
           style={{
             fontSize: "0.55rem",
             letterSpacing: "0.06em",
-            color: isDark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.2)",
+            color: isDark ? "rgba(203,201,196,0.2)" : "rgba(14,14,12,0.2)",
           }}
         >
           © {new Date().getFullYear()} Forge Hyperloop

@@ -19,7 +19,7 @@ export default function Hero({ theme }: HeroProps) {
         alignItems: "center",
         justifyContent: "center",
         position: "relative",
-        background: isDark ? "#000" : "#F5F5F0",
+        background: isDark ? "#0E0E0C" : "#FFFFFF",
         overflow: "hidden",
         padding: "0 24px",
       }}
@@ -31,8 +31,8 @@ export default function Hero({ theme }: HeroProps) {
           position: "absolute",
           inset: 0,
           background: isDark
-            ? "radial-gradient(ellipse 60% 40% at 50% 50%, rgba(255,215,0,0.06) 0%, transparent 70%)"
-            : "radial-gradient(ellipse 60% 40% at 50% 50%, rgba(184,135,10,0.08) 0%, transparent 70%)",
+            ? "radial-gradient(ellipse 60% 40% at 50% 50%, rgba(195,169,132,0.07) 0%, transparent 70%)"
+            : "radial-gradient(ellipse 60% 40% at 50% 50%, rgba(195,169,132,0.09) 0%, transparent 70%)",
           pointerEvents: "none",
         }}
       />
@@ -42,7 +42,7 @@ export default function Hero({ theme }: HeroProps) {
         style={{
           width: 1,
           height: 80,
-          background: `linear-gradient(to bottom, transparent, ${isDark ? "rgba(255,215,0,0.4)" : "rgba(184,135,10,0.4)"})`,
+          background: `linear-gradient(to bottom, transparent, ${isDark ? "rgba(195,169,132,0.4)" : "rgba(195,169,132,0.4)"})`,
           marginBottom: 48,
         }}
       />
@@ -54,7 +54,7 @@ export default function Hero({ theme }: HeroProps) {
           fontWeight: 700,
           letterSpacing: "0.28em",
           textTransform: "uppercase",
-          color: isDark ? "rgba(255,215,0,0.6)" : "rgba(184,135,10,0.7)",
+          color: isDark ? "rgba(195,169,132,0.75)" : "rgba(195,169,132,0.85)",
           marginBottom: 20,
         }}
       >
@@ -68,7 +68,7 @@ export default function Hero({ theme }: HeroProps) {
           fontWeight: 900,
           letterSpacing: "-0.03em",
           lineHeight: 0.9,
-          color: isDark ? "#ffffff" : "#0A0A0A",
+          color: isDark ? "#ffffff" : "#0E0E0C",
           textAlign: "center",
           fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif",
           userSelect: "none",
@@ -83,8 +83,8 @@ export default function Hero({ theme }: HeroProps) {
           width: "clamp(120px, 30vw, 320px)",
           height: 1,
           background: isDark
-            ? "linear-gradient(to right, transparent, rgba(255,215,0,0.5), transparent)"
-            : "linear-gradient(to right, transparent, rgba(184,135,10,0.4), transparent)",
+            ? "linear-gradient(to right, transparent, rgba(195,169,132,0.5), transparent)"
+            : "linear-gradient(to right, transparent, rgba(195,169,132,0.4), transparent)",
           margin: "32px 0",
         }}
       />
@@ -96,7 +96,7 @@ export default function Hero({ theme }: HeroProps) {
           fontWeight: 400,
           letterSpacing: "0.22em",
           textTransform: "uppercase",
-          color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.45)",
+          color: isDark ? "rgba(203,201,196,0.55)" : "rgba(14,14,12,0.5)",
           textAlign: "center",
           maxWidth: 420,
           lineHeight: 1.8,
@@ -124,7 +124,7 @@ export default function Hero({ theme }: HeroProps) {
             fontSize: "0.55rem",
             letterSpacing: "0.18em",
             textTransform: "uppercase",
-            color: isDark ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.3)",
+            color: isDark ? "rgba(203,201,196,0.35)" : "rgba(14,14,12,0.3)",
           }}
         >
           Scroll to explore

@@ -31,24 +31,35 @@ const TEXTURE_DARK =
 const TEXTURE_LIGHT =
   "https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg";
 
-// ── Premium arc gradient ─────────────────────────────────────────────────────
-// Warm-white core with soft golden aura — looks like a maglev light trail
+// ── Arc gradient — warm sand-gold, rich light-trail feel ────────────────────
 const ARC_COLORS_DARK = [
-  "rgba(255,255,255,0)",
-  "rgba(255,220,120,0.45)",
-  "rgba(255,255,255,0.95)",
-  "rgba(255,220,120,0.45)",
-  "rgba(255,255,255,0)",
+  "rgba(195,169,132,0)",
+  "rgba(195,169,132,0.25)",
+  "rgba(195,169,132,1)",
+  "rgba(195,169,132,0.25)",
+  "rgba(195,169,132,0)",
 ];
 const ARC_COLORS_LIGHT = [
-  "rgba(184,135,10,0)",
-  "rgba(184,135,10,0.5)",
-  "rgba(120,80,0,0.9)",
-  "rgba(184,135,10,0.5)",
-  "rgba(184,135,10,0)",
+  "rgba(195,169,132,0)",
+  "rgba(195,169,132,0.3)",
+  "rgba(195,169,132,0.95)",
+  "rgba(195,169,132,0.3)",
+  "rgba(195,169,132,0)",
 ];
-const ARC_COLORS_HOVER_DARK = ["rgba(255,255,255,0)", "#fff", "#fff", "rgba(255,255,255,0)"];
-const ARC_COLORS_HOVER_LIGHT = ["rgba(0,0,0,0)", "#111", "#111", "rgba(0,0,0,0)"];
+const ARC_COLORS_HOVER_DARK = [
+  "rgba(195,169,132,0)",
+  "rgba(195,169,132,0.5)",
+  "#E8D4B8",
+  "rgba(195,169,132,0.5)",
+  "rgba(195,169,132,0)",
+];
+const ARC_COLORS_HOVER_LIGHT = [
+  "rgba(195,169,132,0)",
+  "rgba(195,169,132,0.6)",
+  "#8B6F47",
+  "rgba(195,169,132,0.6)",
+  "rgba(195,169,132,0)",
+];
 
 interface GlobeInnerProps {
   routes: Route[];
@@ -76,10 +87,10 @@ export default function GlobeInner({ routes, theme, onArcSelect, onCityHover }: 
     const tex = theme === "dark" ? TEXTURE_DARK : TEXTURE_LIGHT;
     globeRef.current.globeImageUrl(tex);
     globeRef.current.atmosphereColor(
-      theme === "dark" ? "#1a3a6e" : "#4a90d9"
+      theme === "dark" ? "#1a1a18" : "#d4c9bb"
     );
     globeRef.current.backgroundColor(
-      theme === "dark" ? "#000000" : "#F5F5F0"
+      theme === "dark" ? "#0E0E0C" : "#FFFFFF"
     );
   }, [theme]);
 
@@ -127,10 +138,10 @@ export default function GlobeInner({ routes, theme, onArcSelect, onCityHover }: 
       globe(mountRef.current!)
         // ── Appearance ───────────────────────────────────────────────────
         .globeImageUrl(isDark ? TEXTURE_DARK : TEXTURE_LIGHT)
-        .backgroundColor(isDark ? "#000000" : "#F5F5F0")
+        .backgroundColor(isDark ? "#0E0E0C" : "#FFFFFF")
         .backgroundImageUrl(null)
         .showAtmosphere(true)
-        .atmosphereColor(isDark ? "#1a3a6e" : "#4a90d9")
+        .atmosphereColor(isDark ? "#1a1a18" : "#d4c9bb")
         .atmosphereAltitude(0.15)
 
         // ── Arcs (premium light-trail style) ─────────────────────────────
@@ -149,11 +160,10 @@ export default function GlobeInner({ routes, theme, onArcSelect, onCityHover }: 
           if (isHovered) return dark ? ARC_COLORS_HOVER_DARK : ARC_COLORS_HOVER_LIGHT;
           return dark ? ARC_COLORS_DARK : ARC_COLORS_LIGHT;
         })
-        .arcStroke(0.55)
-        // Short dash = tight pod, fast animate = kinetic feel
-        .arcDashLength(0.18)
-        .arcDashGap(0.04)
-        .arcDashAnimateTime(1600)
+        .arcStroke(1.1)
+        .arcDashLength(0.22)
+        .arcDashGap(0.06)
+        .arcDashAnimateTime(1800)
         .arcDashInitialGap((d) => ((d as ArcDatum).distanceKm % 10) / 10)
         .arcLabel((d) => {
           const arc = d as ArcDatum;
@@ -174,7 +184,7 @@ export default function GlobeInner({ routes, theme, onArcSelect, onCityHover }: 
         .pointsData(pointData)
         .pointLat((d) => (d as PointDatum).lat)
         .pointLng((d) => (d as PointDatum).lng)
-        .pointColor(() => (themeRef.current === "dark" ? "rgba(255,220,120,0.9)" : "rgba(184,135,10,0.85)"))
+        .pointColor(() => (themeRef.current === "dark" ? "rgba(195,169,132,0.95)" : "rgba(195,169,132,0.9)"))
         .pointAltitude(0.008)
         .pointRadius((d) => 0.18 + ((d as PointDatum).connections / 12) * 0.22)
         .pointLabel((d) => {

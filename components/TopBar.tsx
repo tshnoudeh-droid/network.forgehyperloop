@@ -44,7 +44,7 @@ export default function TopBar({ totals }: TopBarProps) {
             fontWeight: 400,
             letterSpacing: "0.18em",
             textTransform: "uppercase",
-            color: "rgba(255,215,0,0.55)",
+            color: "rgba(195,169,132,0.75)",
             marginTop: 5,
             fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif",
           }}
@@ -129,7 +129,7 @@ function Dot() {
         width: 3,
         height: 3,
         borderRadius: "50%",
-        background: "rgba(255,215,0,0.3)",
+        background: "rgba(195,169,132,0.4)",
         display: "inline-block",
         flexShrink: 0,
       }}

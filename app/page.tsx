@@ -42,7 +42,7 @@ export default function Page() {
           height: "100vh",
           position: "relative",
           overflow: "hidden",
-          background: theme === "dark" ? "#000" : "#F5F5F0",
+          background: theme === "dark" ? "#0E0E0C" : "#FFFFFF",
           transition: "background 0.4s ease",
         }}
       >
@@ -76,7 +76,7 @@ export default function Page() {
               fontSize: "0.55rem",
               letterSpacing: "0.18em",
               textTransform: "uppercase",
-              color: theme === "dark" ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.25)",
+              color: theme === "dark" ? "rgba(203,201,196,0.3)" : "rgba(14,14,12,0.3)",
             }}
           >
             Scroll for network data
@@ -102,14 +102,14 @@ export default function Page() {
               transform: "translateX(-50%)",
               background: theme === "dark" ? "rgba(0,0,0,0.75)" : "rgba(255,255,255,0.85)",
               backdropFilter: "blur(12px)",
-              border: `1px solid ${theme === "dark" ? "rgba(255,215,0,0.3)" : "rgba(184,135,10,0.25)"}`,
+              border: `1px solid ${theme === "dark" ? "rgba(195,169,132,0.3)" : "rgba(195,169,132,0.25)"}`,
               borderRadius: 24,
               padding: "8px 20px",
               display: "flex",
               alignItems: "center",
               gap: 10,
               fontSize: "0.72rem",
-              color: theme === "dark" ? "#fff" : "#0A0A0A",
+              color: theme === "dark" ? "#fff" : "#0E0E0C",
               letterSpacing: "0.04em",
               whiteSpace: "nowrap",
               zIndex: 20,
@@ -117,7 +117,7 @@ export default function Page() {
             }}
             onClick={() => setSelectedRoute(null)}
           >
-            <span style={{ color: theme === "dark" ? "rgba(255,215,0,0.7)" : "rgba(184,135,10,0.8)", fontSize: "0.55rem", letterSpacing: "0.1em", textTransform: "uppercase" }}>Route selected</span>
+            <span style={{ color: theme === "dark" ? "rgba(195,169,132,0.8)" : "rgba(195,169,132,0.9)", fontSize: "0.55rem", letterSpacing: "0.1em", textTransform: "uppercase" }}>Route selected</span>
             <span>↓ Scroll to see stats</span>
             <span style={{ opacity: 0.4, fontSize: "0.65rem" }}>✕</span>
           </div>

@@ -46,8 +46,8 @@ function StatTile({
       className={`fade-in delay-${delay}`}
       style={{
         padding: "32px 28px",
-        background: isDark ? "#0A0A0A" : "#ffffff",
-        border: `1px solid ${isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.08)"}`,
+        background: isDark ? "#161614" : "#FAFAF8",
+        border: `1px solid ${isDark ? "rgba(203,201,196,0.08)" : "rgba(14,14,12,0.08)"}`,
         borderRadius: 2,
         display: "flex",
         flexDirection: "column",
@@ -60,7 +60,7 @@ function StatTile({
           fontWeight: 700,
           letterSpacing: "0.14em",
           textTransform: "uppercase",
-          color: isDark ? "rgba(255,215,0,0.55)" : "rgba(184,135,10,0.7)",
+          color: isDark ? "rgba(195,169,132,0.75)" : "rgba(195,169,132,0.85)",
         }}
       >
         {label}
@@ -71,7 +71,7 @@ function StatTile({
           fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)",
           fontWeight: 300,
           letterSpacing: "-0.03em",
-          color: isDark ? "#ffffff" : "#0A0A0A",
+          color: isDark ? "#ffffff" : "#0E0E0C",
           lineHeight: 1,
         }}
       >
@@ -114,7 +114,7 @@ function StatRow({
         justifyContent: "space-between",
         alignItems: "flex-start",
         padding: "12px 0",
-        borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)"}`,
+        borderBottom: `1px solid ${isDark ? "rgba(203,201,196,0.08)" : "rgba(14,14,12,0.07)"}`,
         gap: 16,
       }}
     >
@@ -122,7 +122,7 @@ function StatRow({
         <span
           style={{
             fontSize: "0.7rem",
-            color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)",
+            color: isDark ? "rgba(203,201,196,0.6)" : "rgba(14,14,12,0.5)",
           }}
         >
           {label}
@@ -131,7 +131,7 @@ function StatRow({
           <span
             style={{
               fontSize: "0.55rem",
-              color: isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.25)",
+              color: isDark ? "rgba(203,201,196,0.28)" : "rgba(14,14,12,0.28)",
               letterSpacing: "0.04em",
             }}
           >
@@ -145,8 +145,8 @@ function StatRow({
           fontSize: "0.88rem",
           fontWeight: 500,
           color: highlight
-            ? isDark ? "#FFD700" : "#B8870A"
-            : isDark ? "#ffffff" : "#0A0A0A",
+            ? "#C3A984"
+            : isDark ? "#ffffff" : "#0E0E0C",
           flexShrink: 0,
         }}
       >
@@ -162,8 +162,8 @@ export default function InfoSection({ selectedRoute, totals, theme }: InfoSectio
   const routeRef = useFadeIn(0.1);
   const constRef = useFadeIn(0.1);
 
-  const sectionBg = isDark ? "#000" : "#F5F5F0";
-  const headingColor = isDark ? "#fff" : "#0A0A0A";
+  const sectionBg = isDark ? "#0E0E0C" : "#FFFFFF";
+  const headingColor = isDark ? "#fff" : "#0E0E0C";
 
   return (
     <section
@@ -184,7 +184,7 @@ export default function InfoSection({ selectedRoute, totals, theme }: InfoSectio
               fontWeight: 700,
               letterSpacing: "0.22em",
               textTransform: "uppercase",
-              color: isDark ? "rgba(255,215,0,0.55)" : "rgba(184,135,10,0.7)",
+              color: isDark ? "rgba(195,169,132,0.75)" : "rgba(195,169,132,0.85)",
               marginBottom: 12,
             }}
           >
@@ -211,7 +211,7 @@ export default function InfoSection({ selectedRoute, totals, theme }: InfoSectio
             gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
             gap: 1,
             marginBottom: 80,
-            background: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.06)",
+            background: isDark ? "rgba(203,201,196,0.06)" : "rgba(14,14,12,0.06)",
           }}
         >
           <StatTile label="Total Routes" value={String(totals.totalRoutes)} delay={1} theme={theme} />
@@ -249,7 +249,7 @@ export default function InfoSection({ selectedRoute, totals, theme }: InfoSectio
               fontWeight: 700,
               letterSpacing: "0.18em",
               textTransform: "uppercase",
-              color: isDark ? "rgba(255,215,0,0.55)" : "rgba(184,135,10,0.7)",
+              color: isDark ? "rgba(195,169,132,0.75)" : "rgba(195,169,132,0.85)",
               marginBottom: 16,
             }}
           >
@@ -264,7 +264,7 @@ export default function InfoSection({ selectedRoute, totals, theme }: InfoSectio
                     {CITIES[selectedRoute.from].name}
                   </span>
                 </div>
-                <div style={{ width: 24, height: 1, background: isDark ? "rgba(255,215,0,0.4)" : "rgba(184,135,10,0.4)", margin: "6px 0 6px 4px" }} />
+                <div style={{ width: 24, height: 1, background: isDark ? "rgba(195,169,132,0.5)" : "rgba(195,169,132,0.5)", margin: "6px 0 6px 4px" }} />
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span style={{ fontSize: "1.2rem" }}>{CITIES[selectedRoute.to].flag}</span>
                   <span style={{ fontSize: "1rem", fontWeight: 600, color: headingColor }}>
@@ -284,7 +284,7 @@ export default function InfoSection({ selectedRoute, totals, theme }: InfoSectio
             <div
               style={{
                 padding: "40px 0",
-                color: isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.25)",
+                color: isDark ? "rgba(203,201,196,0.28)" : "rgba(14,14,12,0.28)",
                 fontSize: "0.75rem",
                 letterSpacing: "0.06em",
               }}
@@ -302,7 +302,7 @@ export default function InfoSection({ selectedRoute, totals, theme }: InfoSectio
               fontWeight: 700,
               letterSpacing: "0.18em",
               textTransform: "uppercase",
-              color: isDark ? "rgba(255,215,0,0.55)" : "rgba(184,135,10,0.7)",
+              color: isDark ? "rgba(195,169,132,0.75)" : "rgba(195,169,132,0.85)",
               marginBottom: 16,
             }}
           >

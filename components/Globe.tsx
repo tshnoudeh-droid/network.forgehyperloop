@@ -16,7 +16,7 @@ const GlobeInner = dynamic(() => import("./GlobeInner"), {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        color: "rgba(255,215,0,0.35)",
+        color: "rgba(195,169,132,0.5)",
         fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif",
         fontSize: "0.72rem",
         letterSpacing: "0.14em",

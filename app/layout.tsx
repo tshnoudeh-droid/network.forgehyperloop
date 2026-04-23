@@ -1,5 +1,14 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Libre_Baskerville } from "next/font/google";
+
+const libreBaskerville = Libre_Baskerville({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  style: ["italic"],
+  display: "swap",
+  variable: "--font-baskerville",
+});
 
 export const metadata: Metadata = {
   title: "Forge Hyperloop — Network Simulation",
@@ -25,12 +34,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={libreBaskerville.variable}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#000000" />
+        <meta name="theme-color" content="#0E0E0C" />
       </head>
-      <body>{children}</body>
+      <body className={libreBaskerville.className}>{children}</body>
     </html>
   );
 }

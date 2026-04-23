@@ -2,37 +2,37 @@
 
 /* ── Design tokens ── */
 @theme {
-  --color-gold: #FFD700;
-  --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --color-accent: #C3A984;
+  --font-sans: "Libre Baskerville", Georgia, serif;
   --font-mono: "SF Mono", "JetBrains Mono", ui-monospace, monospace;
 }
 
 /* ── Dark theme (default) ── */
 :root, [data-theme="dark"] {
-  --bg: #000000;
-  --bg-2: #0A0A0A;
-  --bg-3: #111111;
+  --bg: #0E0E0C;
+  --bg-2: #161614;
+  --bg-3: #1C1C1A;
   --border: rgba(255, 255, 255, 0.08);
   --text: #ffffff;
-  --text-muted: rgba(255, 255, 255, 0.45);
-  --text-subtle: rgba(255, 255, 255, 0.22);
-  --accent: #FFD700;
-  --accent-dim: rgba(255, 215, 0, 0.35);
-  --panel-bg: rgba(0, 0, 0, 0.7);
+  --text-muted: rgba(203, 201, 196, 0.6);
+  --text-subtle: rgba(203, 201, 196, 0.3);
+  --accent: #C3A984;
+  --accent-dim: rgba(195, 169, 132, 0.3);
+  --panel-bg: rgba(14, 14, 12, 0.75);
 }
 
 /* ── Light theme ── */
 [data-theme="light"] {
-  --bg: #F5F5F0;
-  --bg-2: #EBEBЕ6;
-  --bg-3: #E0E0DB;
+  --bg: #FFFFFF;
+  --bg-2: #F5F3F0;
+  --bg-3: #EAE7E2;
   --border: rgba(0, 0, 0, 0.1);
-  --text: #0A0A0A;
-  --text-muted: rgba(0, 0, 0, 0.5);
-  --text-subtle: rgba(0, 0, 0, 0.25);
-  --accent: #B8870A;
-  --accent-dim: rgba(184, 135, 10, 0.2);
-  --panel-bg: rgba(245, 245, 240, 0.85);
+  --text: #0E0E0C;
+  --text-muted: rgba(14, 14, 12, 0.5);
+  --text-subtle: rgba(14, 14, 12, 0.28);
+  --accent: #C3A984;
+  --accent-dim: rgba(195, 169, 132, 0.25);
+  --panel-bg: rgba(255, 255, 255, 0.88);
 }
 
 /* ── Reset ── */
@@ -47,6 +47,7 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);
+  font-style: italic;
   -webkit-font-smoothing: antialiased;
   transition: background 0.4s ease, color 0.4s ease;
   min-height: 100%;

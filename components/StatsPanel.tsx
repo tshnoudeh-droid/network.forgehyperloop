@@ -44,7 +44,7 @@ function StatRow({
         flexDirection: "column",
         gap: 2,
         padding: "10px 0",
-        borderBottom: "1px solid rgba(255,255,255,0.06)",
+        borderBottom: "1px solid rgba(203,201,196,0.08)",
       }}
     >
       <span
@@ -53,7 +53,7 @@ function StatRow({
           fontWeight: 600,
           letterSpacing: "0.1em",
           textTransform: "uppercase",
-          color: "rgba(255,255,255,0.4)",
+          color: "rgba(203,201,196,0.55)",
         }}
       >
         {label}
@@ -64,7 +64,7 @@ function StatRow({
             '"SF Mono", "JetBrains Mono", "Fira Code", ui-monospace, monospace',
           fontSize: "0.95rem",
           fontWeight: 500,
-          color: highlight ? "#FFD700" : "#ffffff",
+          color: highlight ? "#C3A984" : "#ffffff",
           lineHeight: 1.3,
         }}
       >
@@ -74,7 +74,7 @@ function StatRow({
         <span
           style={{
             fontSize: "0.58rem",
-            color: "rgba(255,255,255,0.25)",
+            color: "rgba(203,201,196,0.32)",
             letterSpacing: "0.04em",
           }}
         >
@@ -101,7 +101,7 @@ function Divider({ label }: { label: string }) {
           fontWeight: 700,
           letterSpacing: "0.14em",
           textTransform: "uppercase",
-          color: "rgba(255,215,0,0.5)",
+          color: "rgba(195,169,132,0.75)",
           whiteSpace: "nowrap",
         }}
       >
@@ -111,7 +111,7 @@ function Divider({ label }: { label: string }) {
         style={{
           flex: 1,
           height: 1,
-          background: "rgba(255,215,0,0.12)",
+          background: "rgba(195,169,132,0.15)",
         }}
       />
     </div>
@@ -135,8 +135,8 @@ export default function StatsPanel({ selectedRoute, totals }: StatsPanelProps) {
         width: 280,
         minWidth: 280,
         height: "100%",
-        background: "#0A0A0A",
-        borderLeft: "1px solid rgba(255,255,255,0.08)",
+        background: "#0E0E0C",
+        borderLeft: "1px solid rgba(203,201,196,0.08)",
         display: "flex",
         flexDirection: "column",
         overflowY: "auto",
@@ -148,7 +148,7 @@ export default function StatsPanel({ selectedRoute, totals }: StatsPanelProps) {
       <div
         style={{
           padding: "20px 20px 0",
-          borderBottom: "1px solid rgba(255,255,255,0.06)",
+          borderBottom: "1px solid rgba(203,201,196,0.08)",
           paddingBottom: 16,
         }}
       >
@@ -158,7 +158,7 @@ export default function StatsPanel({ selectedRoute, totals }: StatsPanelProps) {
             fontWeight: 700,
             letterSpacing: "0.14em",
             textTransform: "uppercase",
-            color: "rgba(255,215,0,0.6)",
+            color: "rgba(195,169,132,0.8)",
             marginBottom: 6,
           }}
         >
@@ -184,9 +184,9 @@ export default function StatsPanel({ selectedRoute, totals }: StatsPanelProps) {
       <div
         style={{
           padding: "12px 20px",
-          borderTop: "1px solid rgba(255,255,255,0.06)",
+          borderTop: "1px solid rgba(203,201,196,0.08)",
           fontSize: "0.55rem",
-          color: "rgba(255,255,255,0.2)",
+          color: "rgba(203,201,196,0.28)",
           letterSpacing: "0.04em",
           lineHeight: 1.6,
         }}
@@ -237,14 +237,14 @@ function RouteHeader({ route }: { route: Route }) {
           style={{
             width: 16,
             height: 1,
-            background: "rgba(255,215,0,0.5)",
+            background: "rgba(195,169,132,0.6)",
             marginLeft: 2,
           }}
         />
         <span
           style={{
             fontSize: "0.58rem",
-            color: "rgba(255,215,0,0.6)",
+            color: "rgba(195,169,132,0.8)",
             letterSpacing: "0.08em",
             textTransform: "uppercase",
           }}
@@ -342,7 +342,7 @@ function NetworkHeader({ totals }: { totals: NetworkTotals }) {
         style={{
           fontSize: "0.65rem",
           fontWeight: 400,
-          color: "rgba(255,255,255,0.4)",
+          color: "rgba(203,201,196,0.55)",
           marginTop: 2,
           letterSpacing: "0.02em",
         }}
