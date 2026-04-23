@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── Brand colours ── */
+  --color-gold: #FFD700;
+  --color-gold-dim: #B8960C;
+  --color-surface: #0A0A0A;
+  --color-surface-2: #111111;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-text: #FFFFFF;
+  --color-text-muted: rgba(255, 255, 255, 0.45);
+  --color-text-subtle: rgba(255, 255, 255, 0.25);
+
+  /* ── Typography ── */
+  --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono: "SF Mono", "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+
+  /* ── Spacing & sizing ── */
+  --panel-width: 280px;
+  --topbar-height: 48px;
+}
+
+/* ── Reset & base ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  background: #000000;
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 2px;
+}
+
+/* ── Utility: small caps label ── */
+.label-caps {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* ── Utility: mono number ── */
+.mono-value {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+/* ── Globe tooltip override ── */
+.globe-tooltip {
+  background: rgba(10, 10, 10, 0.9) !important;
+  border: 1px solid rgba(255, 215, 0, 0.3) !important;
+  border-radius: 6px !important;
+  color: #ffffff !important;
+  font-family: var(--font-sans) !important;
+  font-size: 0.75rem !important;
+  padding: 8px 12px !important;
+  pointer-events: none !important;
+}
