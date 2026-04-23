@@ -1,13 +1,10 @@
 "use client";
 
-/**
- * Globe.tsx — SSR-safe wrapper.
- * Dynamically imports GlobeInner with ssr:false so globe.gl never touches Node.
- */
-
 import dynamic from "next/dynamic";
 import type { Route } from "@/lib/routes";
 import type { City } from "@/lib/cities";
+
+type Theme = "dark" | "light";
 
 const GlobeInner = dynamic(() => import("./GlobeInner"), {
   ssr: false,
@@ -19,11 +16,10 @@ const GlobeInner = dynamic(() => import("./GlobeInner"), {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "#000",
-        color: "rgba(255,215,0,0.4)",
+        color: "rgba(255,215,0,0.35)",
         fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif",
-        fontSize: "0.75rem",
-        letterSpacing: "0.12em",
+        fontSize: "0.72rem",
+        letterSpacing: "0.14em",
         textTransform: "uppercase",
       }}
     >
@@ -34,14 +30,16 @@ const GlobeInner = dynamic(() => import("./GlobeInner"), {
 
 interface GlobeProps {
   routes: Route[];
+  theme: Theme;
   onArcSelect: (route: Route | null) => void;
   onCityHover: (city: City | null) => void;
 }
 
-export default function Globe({ routes, onArcSelect, onCityHover }: GlobeProps) {
+export default function Globe({ routes, theme, onArcSelect, onCityHover }: GlobeProps) {
   return (
     <GlobeInner
       routes={routes}
+      theme={theme}
       onArcSelect={onArcSelect}
       onCityHover={onCityHover}
     />

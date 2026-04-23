@@ -1,83 +1,94 @@
 @import "tailwindcss";
 
+/* ── Design tokens ── */
 @theme {
-  /* ── Brand colours ── */
   --color-gold: #FFD700;
-  --color-gold-dim: #B8960C;
-  --color-surface: #0A0A0A;
-  --color-surface-2: #111111;
-  --color-border: rgba(255, 255, 255, 0.08);
-  --color-text: #FFFFFF;
-  --color-text-muted: rgba(255, 255, 255, 0.45);
-  --color-text-subtle: rgba(255, 255, 255, 0.25);
-
-  /* ── Typography ── */
   --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --font-mono: "SF Mono", "JetBrains Mono", "Fira Code", ui-monospace, monospace;
-
-  /* ── Spacing & sizing ── */
-  --panel-width: 280px;
-  --topbar-height: 48px;
+  --font-mono: "SF Mono", "JetBrains Mono", ui-monospace, monospace;
 }
 
-/* ── Reset & base ── */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+/* ── Dark theme (default) ── */
+:root, [data-theme="dark"] {
+  --bg: #000000;
+  --bg-2: #0A0A0A;
+  --bg-3: #111111;
+  --border: rgba(255, 255, 255, 0.08);
+  --text: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.45);
+  --text-subtle: rgba(255, 255, 255, 0.22);
+  --accent: #FFD700;
+  --accent-dim: rgba(255, 215, 0, 0.35);
+  --panel-bg: rgba(0, 0, 0, 0.7);
 }
 
-html,
-body {
+/* ── Light theme ── */
+[data-theme="light"] {
+  --bg: #F5F5F0;
+  --bg-2: #EBEBЕ6;
+  --bg-3: #E0E0DB;
+  --border: rgba(0, 0, 0, 0.1);
+  --text: #0A0A0A;
+  --text-muted: rgba(0, 0, 0, 0.5);
+  --text-subtle: rgba(0, 0, 0, 0.25);
+  --accent: #B8870A;
+  --accent-dim: rgba(184, 135, 10, 0.2);
+  --panel-bg: rgba(245, 245, 240, 0.85);
+}
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
   height: 100%;
-  width: 100%;
-  background: #000000;
-  color: var(--color-text);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  overflow: hidden;
+  transition: background 0.4s ease, color 0.4s ease;
+  min-height: 100%;
 }
 
-/* ── Scrollbar ── */
-::-webkit-scrollbar {
-  width: 4px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 2px;
+/* ── Scroll ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* ── Fade-in animation ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Utility: small caps label ── */
-.label-caps {
-  font-size: 0.65rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
+.fade-in {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
 }
-
-/* ── Utility: mono number ── */
-.mono-value {
-  font-family: var(--font-mono);
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: var(--color-text);
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
+.fade-in.delay-1 { transition-delay: 0.1s; }
+.fade-in.delay-2 { transition-delay: 0.2s; }
+.fade-in.delay-3 { transition-delay: 0.3s; }
+.fade-in.delay-4 { transition-delay: 0.4s; }
+.fade-in.delay-5 { transition-delay: 0.5s; }
+.fade-in.delay-6 { transition-delay: 0.6s; }
 
-/* ── Globe tooltip override ── */
+/* ── Globe tooltip ── */
 .globe-tooltip {
-  background: rgba(10, 10, 10, 0.9) !important;
-  border: 1px solid rgba(255, 215, 0, 0.3) !important;
+  background: var(--panel-bg) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid var(--accent-dim) !important;
   border-radius: 6px !important;
-  color: #ffffff !important;
+  color: var(--text) !important;
   font-family: var(--font-sans) !important;
-  font-size: 0.75rem !important;
+  font-size: 0.72rem !important;
   padding: 8px 12px !important;
   pointer-events: none !important;
+  line-height: 1.5 !important;
 }

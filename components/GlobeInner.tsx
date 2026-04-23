@@ -1,19 +1,12 @@
 "use client";
 
-/**
- * GlobeInner.tsx
- *
- * Actual globe.gl imperative rendering. Loaded only client-side via Globe.tsx.
- * Uses useRef + useEffect to mount globe.gl into a <div>.
- */
-
 import { useEffect, useRef, useCallback } from "react";
 import type { Route } from "@/lib/routes";
 import type { City, CityKey } from "@/lib/cities";
 import { CITIES, CITY_LIST } from "@/lib/cities";
 import { arcAltitude } from "@/lib/geo";
 
-// ── Types ────────────────────────────────────────────────────────────────────
+type Theme = "dark" | "light";
 
 interface ArcDatum {
   from: CityKey;
@@ -30,37 +23,67 @@ interface PointDatum extends City {
   connections: number;
 }
 
-// ── Constants ────────────────────────────────────────────────────────────────
+// ── Textures ─────────────────────────────────────────────────────────────────
+// Dark: NASA night-lights — city glow on dark ocean, perfect for hyperloop
+// Light: Blue marble — clear land/ocean contrast
+const TEXTURE_DARK =
+  "https://unpkg.com/three-globe/example/img/earth-night.jpg";
+const TEXTURE_LIGHT =
+  "https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg";
 
-const GLOBE_TEXTURE =
-  "https://unpkg.com/three-globe/example/img/earth-dark.jpg";
-const ARC_COLOR = "#FFD700";
-const ARC_COLOR_HOVER = "#FFFFFF";
-const POINT_COLOR = "#FFD700";
-const POINT_COLOR_HOVER = "#FFFFFF";
-
-// ── Props ────────────────────────────────────────────────────────────────────
+// ── Premium arc gradient ─────────────────────────────────────────────────────
+// Warm-white core with soft golden aura — looks like a maglev light trail
+const ARC_COLORS_DARK = [
+  "rgba(255,255,255,0)",
+  "rgba(255,220,120,0.45)",
+  "rgba(255,255,255,0.95)",
+  "rgba(255,220,120,0.45)",
+  "rgba(255,255,255,0)",
+];
+const ARC_COLORS_LIGHT = [
+  "rgba(184,135,10,0)",
+  "rgba(184,135,10,0.5)",
+  "rgba(120,80,0,0.9)",
+  "rgba(184,135,10,0.5)",
+  "rgba(184,135,10,0)",
+];
+const ARC_COLORS_HOVER_DARK = ["rgba(255,255,255,0)", "#fff", "#fff", "rgba(255,255,255,0)"];
+const ARC_COLORS_HOVER_LIGHT = ["rgba(0,0,0,0)", "#111", "#111", "rgba(0,0,0,0)"];
 
 interface GlobeInnerProps {
   routes: Route[];
+  theme: Theme;
   onArcSelect: (route: Route | null) => void;
   onCityHover: (city: City | null) => void;
 }
 
-// ── Component ────────────────────────────────────────────────────────────────
-
-export default function GlobeInner({
-  routes,
-  onArcSelect,
-  onCityHover,
-}: GlobeInnerProps) {
+export default function GlobeInner({ routes, theme, onArcSelect, onCityHover }: GlobeInnerProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const globeRef = useRef<any>(null);
   const hoveredArcRef = useRef<ArcDatum | null>(null);
   const hasInteractedRef = useRef(false);
+  const themeRef = useRef(theme);
 
-  // Build arc data
+  // Keep themeRef in sync
+  useEffect(() => {
+    themeRef.current = theme;
+  }, [theme]);
+
+  // Update globe texture when theme changes
+  useEffect(() => {
+    if (!globeRef.current) return;
+    const tex = theme === "dark" ? TEXTURE_DARK : TEXTURE_LIGHT;
+    globeRef.current.globeImageUrl(tex);
+    globeRef.current.atmosphereColor(
+      theme === "dark" ? "#1a3a6e" : "#4a90d9"
+    );
+    globeRef.current.backgroundColor(
+      theme === "dark" ? "#000000" : "#F5F5F0"
+    );
+  }, [theme]);
+
+  // Build arc + point data
   const arcData: ArcDatum[] = routes.map((r) => {
     const a = CITIES[r.from];
     const b = CITIES[r.to];
@@ -76,7 +99,6 @@ export default function GlobeInner({
     };
   });
 
-  // Build point data with connection counts
   const connectionCount: Record<string, number> = {};
   for (const r of routes) {
     connectionCount[r.from] = (connectionCount[r.from] ?? 0) + 1;
@@ -97,22 +119,21 @@ export default function GlobeInner({
   useEffect(() => {
     if (!mountRef.current) return;
 
-    let globe: ReturnType<typeof import("globe.gl")>;
-
     (async () => {
       const GlobeLib = (await import("globe.gl")).default;
-      globe = GlobeLib();
+      const isDark = themeRef.current === "dark";
+      const globe = GlobeLib();
 
       globe(mountRef.current!)
-        // ── Globe appearance ──────────────────────────────────────────────
-        .globeImageUrl(GLOBE_TEXTURE)
-        .backgroundColor("#000000")
+        // ── Appearance ───────────────────────────────────────────────────
+        .globeImageUrl(isDark ? TEXTURE_DARK : TEXTURE_LIGHT)
+        .backgroundColor(isDark ? "#000000" : "#F5F5F0")
         .backgroundImageUrl(null)
         .showAtmosphere(true)
-        .atmosphereColor("#1a3a6e")
+        .atmosphereColor(isDark ? "#1a3a6e" : "#4a90d9")
         .atmosphereAltitude(0.15)
 
-        // ── Arcs ──────────────────────────────────────────────────────────
+        // ── Arcs (premium light-trail style) ─────────────────────────────
         .arcsData(arcData)
         .arcStartLat((d) => (d as ArcDatum).startLat)
         .arcStartLng((d) => (d as ArcDatum).startLng)
@@ -124,87 +145,60 @@ export default function GlobeInner({
           const isHovered =
             hoveredArcRef.current?.from === arc.from &&
             hoveredArcRef.current?.to === arc.to;
-          return isHovered ? ARC_COLOR_HOVER : ARC_COLOR;
+          const dark = themeRef.current === "dark";
+          if (isHovered) return dark ? ARC_COLORS_HOVER_DARK : ARC_COLORS_HOVER_LIGHT;
+          return dark ? ARC_COLORS_DARK : ARC_COLORS_LIGHT;
         })
-        .arcStroke(0.4)
-        .arcDashLength(0.3)
-        .arcDashGap(0.15)
-        .arcDashAnimateTime(2200)
-        .arcDashInitialGap((d) =>
-          // stagger initial gap so pods don't all start at same position
-          ((d as ArcDatum).distanceKm % 10) / 10
-        )
+        .arcStroke(0.55)
+        // Short dash = tight pod, fast animate = kinetic feel
+        .arcDashLength(0.18)
+        .arcDashGap(0.04)
+        .arcDashAnimateTime(1600)
+        .arcDashInitialGap((d) => ((d as ArcDatum).distanceKm % 10) / 10)
         .arcLabel((d) => {
           const arc = d as ArcDatum;
           const a = CITIES[arc.from];
           const b = CITIES[arc.to];
-          return `
-            <div class="globe-tooltip">
-              <strong>${a.flag} ${a.name} → ${b.flag} ${b.name}</strong><br/>
-              ${arc.distanceKm.toLocaleString("en-US")} km
-            </div>
-          `;
+          return `<div class="globe-tooltip"><strong>${a.flag} ${a.name} → ${b.flag} ${b.name}</strong><br/>${arc.distanceKm.toLocaleString("en-US")} km</div>`;
         })
         .onArcHover((arc) => {
           hoveredArcRef.current = arc as ArcDatum | null;
-          // Re-render arcs to update color
           globe.arcsData([...arcData]);
         })
         .onArcClick((arc) => {
           const a = arc as ArcDatum;
-          onArcSelect(
-            routes.find((r) => r.from === a.from && r.to === a.to) ?? null
-          );
+          onArcSelect(routes.find((r) => r.from === a.from && r.to === a.to) ?? null);
         })
 
-        // ── City points ───────────────────────────────────────────────────
+        // ── City points ──────────────────────────────────────────────────
         .pointsData(pointData)
         .pointLat((d) => (d as PointDatum).lat)
         .pointLng((d) => (d as PointDatum).lng)
-        .pointColor((d) =>
-          (d as PointDatum).id === hoveredArcRef.current?.from ||
-          (d as PointDatum).id === hoveredArcRef.current?.to
-            ? POINT_COLOR_HOVER
-            : POINT_COLOR
-        )
-        .pointAltitude(0.01)
-        .pointRadius((d) => 0.15 + ((d as PointDatum).connections / 12) * 0.25)
+        .pointColor(() => (themeRef.current === "dark" ? "rgba(255,220,120,0.9)" : "rgba(184,135,10,0.85)"))
+        .pointAltitude(0.008)
+        .pointRadius((d) => 0.18 + ((d as PointDatum).connections / 12) * 0.22)
         .pointLabel((d) => {
           const p = d as PointDatum;
-          return `
-            <div class="globe-tooltip">
-              <strong>${p.flag} ${p.name}</strong><br/>
-              ${p.country} · ${p.connections} routes
-            </div>
-          `;
+          return `<div class="globe-tooltip"><strong>${p.flag} ${p.name}</strong><br/>${p.country} · ${p.connections} routes</div>`;
         })
-        .onPointHover((point) => {
-          onCityHover(point as City | null);
-        })
-        .onPointClick((point) => {
-          // Clicking a city clears the selected route
-          void point;
-          onArcSelect(null);
-        });
+        .onPointHover((p) => onCityHover(p as City | null))
+        .onPointClick(() => onArcSelect(null));
 
       // ── Controls ─────────────────────────────────────────────────────────
       const controls = globe.controls();
       controls.autoRotate = true;
-      controls.autoRotateSpeed = 0.4;
-      controls.enableZoom = true;
+      controls.autoRotateSpeed = 0.35;
+      // Zoom disabled so page scroll works naturally
+      controls.enableZoom = false;
 
-      // Initial camera position — slight tilt to see Europe/Americas well
-      globe.pointOfView({ lat: 20, lng: 10, altitude: 2.2 }, 0);
+      globe.pointOfView({ lat: 22, lng: 12, altitude: 2.1 }, 0);
 
       globeRef.current = globe;
     })();
 
-    // Stop auto-rotate on any user interaction
     const el = mountRef.current;
-    el.addEventListener("pointerdown", stopAutoRotate, { passive: true });
-    el.addEventListener("wheel", stopAutoRotate, { passive: true });
+    el?.addEventListener("pointerdown", stopAutoRotate, { passive: true });
 
-    // Resize observer to keep globe filling its container
     const resizeObserver = new ResizeObserver(() => {
       if (globeRef.current && mountRef.current) {
         globeRef.current
@@ -215,10 +209,8 @@ export default function GlobeInner({
     if (el) resizeObserver.observe(el);
 
     return () => {
-      el.removeEventListener("pointerdown", stopAutoRotate);
-      el.removeEventListener("wheel", stopAutoRotate);
+      el?.removeEventListener("pointerdown", stopAutoRotate);
       resizeObserver.disconnect();
-      // globe.gl doesn't expose a destroy method; clearing the ref is enough
       globeRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
