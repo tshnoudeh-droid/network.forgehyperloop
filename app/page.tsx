@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import ThemeToggle from "@/components/ThemeToggle";
 import TopBar from "@/components/TopBar";
 import { ROUTES, type Route } from "@/lib/routes";
+import { CITIES } from "@/lib/cities";
 import type { City } from "@/lib/cities";
 import { computeNetworkTotals } from "@/lib/stats";
 
@@ -92,34 +93,76 @@ export default function Page() {
           </svg>
         </div>
 
-        {/* Selected route pill */}
+        {/* Right-side route indicator */}
         {selectedRoute && (
           <div
             style={{
               position: "absolute",
-              top: 60,
-              left: "50%",
-              transform: "translateX(-50%)",
-              background: theme === "dark" ? "rgba(0,0,0,0.75)" : "rgba(255,255,255,0.85)",
-              backdropFilter: "blur(12px)",
-              border: `1px solid ${theme === "dark" ? "rgba(195,169,132,0.3)" : "rgba(195,169,132,0.25)"}`,
-              borderRadius: 24,
-              padding: "8px 20px",
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              fontSize: "0.72rem",
-              color: theme === "dark" ? "#fff" : "#0E0E0C",
-              letterSpacing: "0.04em",
-              whiteSpace: "nowrap",
+              right: 24,
+              top: "50%",
+              transform: "translateY(-50%)",
+              background: theme === "dark" ? "rgba(0,0,0,0.72)" : "rgba(255,255,255,0.88)",
+              backdropFilter: "blur(16px)",
+              border: "1px solid rgba(195,169,132,0.25)",
+              borderRadius: 12,
+              padding: "20px 24px",
+              minWidth: 180,
               zIndex: 20,
-              cursor: "pointer",
+              display: "flex",
+              flexDirection: "column",
+              gap: 10,
             }}
-            onClick={() => setSelectedRoute(null)}
           >
-            <span style={{ color: theme === "dark" ? "rgba(195,169,132,0.8)" : "rgba(195,169,132,0.9)", fontSize: "0.55rem", letterSpacing: "0.1em", textTransform: "uppercase" }}>Route selected</span>
-            <span>↓ Scroll to see stats</span>
-            <span style={{ opacity: 0.4, fontSize: "0.65rem" }}>✕</span>
+            <span
+              style={{
+                fontSize: "0.52rem",
+                letterSpacing: "0.22em",
+                textTransform: "uppercase",
+                color: "rgba(195,169,132,0.8)",
+              }}
+            >
+              Route selected
+            </span>
+            <div
+              style={{
+                fontSize: "0.82rem",
+                fontWeight: 600,
+                color: theme === "dark" ? "#fff" : "#0E0E0C",
+                lineHeight: 1.6,
+              }}
+            >
+              {CITIES[selectedRoute.from].flag} {CITIES[selectedRoute.from].name}
+              <br />
+              <span style={{ opacity: 0.35, fontSize: "0.65rem" }}>↓</span>
+              <br />
+              {CITIES[selectedRoute.to].flag} {CITIES[selectedRoute.to].name}
+            </div>
+            <span
+              style={{
+                fontSize: "0.58rem",
+                letterSpacing: "0.1em",
+                color: theme === "dark" ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.3)",
+              }}
+            >
+              ↓ Scroll for details
+            </span>
+            <button
+              onClick={() => setSelectedRoute(null)}
+              style={{
+                position: "absolute",
+                top: 10,
+                right: 12,
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                fontSize: "0.65rem",
+                color: theme === "dark" ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.3)",
+                padding: 0,
+                lineHeight: 1,
+              }}
+            >
+              ✕
+            </button>
           </div>
         )}
       </section>

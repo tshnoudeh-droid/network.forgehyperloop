@@ -27,23 +27,8 @@ interface PointDatum extends City {
 const TEXTURE =
   "https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg";
 
-// ── Arc gradient — premium #C3A984 with luminous centre ──────────────────────
-// Quick ramp from transparent → near-opaque, then a brighter core (#E0C9A6)
-// gives depth without muddiness. Hover flips to white for clear selection.
-const ARC_COLORS = [
-  "rgba(195,169,132,0)",
-  "rgba(195,169,132,0.88)",
-  "rgba(224,201,166,1)",
-  "rgba(195,169,132,0.88)",
-  "rgba(195,169,132,0)",
-];
-const ARC_COLORS_HOVER = [
-  "rgba(255,255,255,0)",
-  "rgba(255,255,255,0.85)",
-  "rgba(255,255,255,1)",
-  "rgba(255,255,255,0.85)",
-  "rgba(255,255,255,0)",
-];
+const ARC_COLORS = ["rgba(195,169,132,0.95)", "rgba(195,169,132,0.95)"];
+const ARC_COLORS_HOVER = ["rgba(255,255,255,0.95)", "rgba(255,255,255,0.95)"];
 
 interface GlobeInnerProps {
   routes: Route[];
@@ -137,9 +122,9 @@ export default function GlobeInner({ routes, theme, onArcSelect, onCityHover }: 
             hoveredArcRef.current?.to === arc.to;
           return isHovered ? ARC_COLORS_HOVER : ARC_COLORS;
         })
-        .arcStroke(1.8)
-        .arcDashLength(0.32)
-        .arcDashGap(0.04)
+        .arcStroke(2.2)
+        .arcDashLength(0.6)
+        .arcDashGap(0.02)
         .arcDashAnimateTime(1500)
         .arcDashInitialGap((d) => ((d as ArcDatum).distanceKm % 10) / 10)
         .arcLabel((d) => {
@@ -176,11 +161,11 @@ export default function GlobeInner({ routes, theme, onArcSelect, onCityHover }: 
         .labelLat((d) => (d as City).lat)
         .labelLng((d) => (d as City).lng)
         .labelText((d) => (d as City).name)
-        .labelColor(() => "rgba(195,169,132,0.92)")
-        .labelSize(0.38)
+        .labelColor(() => "rgba(255,255,255,0.92)")
+        .labelSize(0.55)
         .labelDotRadius(0)
-        .labelAltitude(0.018)
-        .labelResolution(2);
+        .labelAltitude(0.022)
+        .labelResolution(3);
 
       // ── Controls ─────────────────────────────────────────────────────────
       const controls = globe.controls();

@@ -28,13 +28,6 @@ export function haversineKm(
   return EARTH_RADIUS_KM * c;
 }
 
-/**
- * Arc altitude for globe.gl — longer routes get a higher arc.
- * Capped at ~0.5 for the longest trans-continental routes.
- *
- * Formula: distance_km / 20000
- * e.g. 1000 km → 0.05  |  10000 km → 0.50
- */
 export function arcAltitude(distanceKm: number): number {
-  return Math.min(distanceKm / 20000, 0.5);
+  return Math.min(distanceKm / 40000, 0.15);
 }
