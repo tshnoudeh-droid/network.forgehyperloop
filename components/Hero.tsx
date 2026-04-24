@@ -4,9 +4,10 @@ type Theme = "dark" | "light";
 
 interface HeroProps {
   theme: Theme;
+  citiesConnected: number;
 }
 
-export default function Hero({ theme }: HeroProps) {
+export default function Hero({ theme, citiesConnected }: HeroProps) {
   const isDark = theme === "dark";
 
   return (
@@ -104,7 +105,7 @@ export default function Hero({ theme }: HeroProps) {
       >
         A global infrastructure simulation
         <br />
-        connecting 30 cities across 6 continents
+        connecting {citiesConnected} cities across 6 continents
       </p>
 
       {/* Bottom scroll cue */}

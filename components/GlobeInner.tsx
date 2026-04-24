@@ -169,7 +169,18 @@ export default function GlobeInner({ routes, theme, onArcSelect, onCityHover }: 
           return `<div class="globe-tooltip"><strong>${p.flag} ${p.name}</strong><br/>${p.country} · ${p.connections} routes</div>`;
         })
         .onPointHover((p) => onCityHover(p as City | null))
-        .onPointClick(() => onArcSelect(null));
+        .onPointClick(() => onArcSelect(null))
+
+        // ── City labels ──────────────────────────────────────────────────
+        .labelsData(CITY_LIST)
+        .labelLat((d) => (d as City).lat)
+        .labelLng((d) => (d as City).lng)
+        .labelText((d) => (d as City).name)
+        .labelColor(() => "rgba(195,169,132,0.92)")
+        .labelSize(0.38)
+        .labelDotRadius(0)
+        .labelAltitude(0.018)
+        .labelResolution(2);
 
       // ── Controls ─────────────────────────────────────────────────────────
       const controls = globe.controls();

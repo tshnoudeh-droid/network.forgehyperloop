@@ -33,7 +33,7 @@ export default function Page() {
       <ThemeToggle theme={theme} onToggle={toggleTheme} />
 
       {/* ── Section 1: Hero ── */}
-      <Hero theme={theme} />
+      <Hero theme={theme} citiesConnected={totals.citiesConnected} />
 
       {/* ── Section 2: Globe ── */}
       <section

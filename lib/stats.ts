@@ -136,3 +136,10 @@ export function formatCo2Kg(kg: number): string {
   if (kg >= 1000) return `${(kg / 1000).toFixed(1)} t CO₂`;
   return `${Math.round(kg)} kg CO₂`;
 }
+
+/** Human-readable CO₂ comparator for network totals (tonnes input) */
+export function co2NetworkComparator(tonnes: number): string {
+  // 250 kg CO₂ per transatlantic economy passenger (ICAO-based)
+  const seats = Math.round((tonnes * 1000) / 250);
+  return `≈ ${seats.toLocaleString("en-US")} transatlantic passenger seats offset`;
+}

@@ -80,6 +80,33 @@ body {
 .fade-in.delay-5 { transition-delay: 0.5s; }
 .fade-in.delay-6 { transition-delay: 0.6s; }
 
+/* ── Glass card ── */
+.glass-card {
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border-radius: 4px;
+}
+
+[data-theme="dark"] .glass-card {
+  background: rgba(18, 18, 16, 0.55) !important;
+  border: 1px solid rgba(195, 169, 132, 0.16) !important;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.45),
+              inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="light"] .glass-card {
+  background: rgba(255, 255, 255, 0.72) !important;
+  border: 1px solid rgba(195, 169, 132, 0.22) !important;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.07),
+              inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .route-grid { grid-template-columns: 1fr !important; }
+  .stat-grid  { grid-template-columns: 1fr 1fr !important; }
+}
+
 /* ── Globe tooltip ── */
 .globe-tooltip {
   background: var(--panel-bg) !important;
