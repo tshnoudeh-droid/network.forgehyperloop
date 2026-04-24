@@ -23,35 +23,26 @@ interface PointDatum extends City {
   connections: number;
 }
 
-// ── Globe texture — solid #C3A984 on both modes ───────────────────────────────
-let solidTexCache: string | null = null;
+// ── Texture — blue marble on both modes ──────────────────────────────────────
+const TEXTURE =
+  "https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg";
 
-function solidGlobeTexture(): string {
-  if (solidTexCache) return solidTexCache;
-  const canvas = document.createElement("canvas");
-  canvas.width = 4;
-  canvas.height = 4;
-  const ctx = canvas.getContext("2d")!;
-  ctx.fillStyle = "#C3A984";
-  ctx.fillRect(0, 0, 4, 4);
-  solidTexCache = canvas.toDataURL();
-  return solidTexCache;
-}
-
-// ── Arc colours — crisp white, dominant; hover inverts to #C3A984 ────────────
+// ── Arc gradient — premium #C3A984 with luminous centre ──────────────────────
+// Quick ramp from transparent → near-opaque, then a brighter core (#E0C9A6)
+// gives depth without muddiness. Hover flips to white for clear selection.
 const ARC_COLORS = [
-  "rgba(255,255,255,0)",
-  "rgba(255,255,255,0.92)",
-  "rgba(255,255,255,1)",
-  "rgba(255,255,255,0.92)",
-  "rgba(255,255,255,0)",
+  "rgba(195,169,132,0)",
+  "rgba(195,169,132,0.88)",
+  "rgba(224,201,166,1)",
+  "rgba(195,169,132,0.88)",
+  "rgba(195,169,132,0)",
 ];
 const ARC_COLORS_HOVER = [
-  "rgba(195,169,132,0)",
-  "rgba(195,169,132,0.95)",
-  "#C3A984",
-  "rgba(195,169,132,0.95)",
-  "rgba(195,169,132,0)",
+  "rgba(255,255,255,0)",
+  "rgba(255,255,255,0.85)",
+  "rgba(255,255,255,1)",
+  "rgba(255,255,255,0.85)",
+  "rgba(255,255,255,0)",
 ];
 
 interface GlobeInnerProps {
@@ -74,11 +65,11 @@ export default function GlobeInner({ routes, theme, onArcSelect, onCityHover }: 
     themeRef.current = theme;
   }, [theme]);
 
-  // Update bg / atmosphere when theme changes (globe texture is constant)
+  // Same texture both modes — only bg and atmosphere need updating
   useEffect(() => {
     if (!globeRef.current) return;
     const isDark = theme === "dark";
-    globeRef.current.atmosphereColor(isDark ? "#D4BF9E" : "#A08060");
+    globeRef.current.atmosphereColor(isDark ? "#1a3a6e" : "#4a90d9");
     globeRef.current.backgroundColor(isDark ? "#0E0E0C" : "#FFFFFF");
   }, [theme]);
 
@@ -125,14 +116,14 @@ export default function GlobeInner({ routes, theme, onArcSelect, onCityHover }: 
 
       globe(mountRef.current!)
         // ── Appearance ───────────────────────────────────────────────────
-        .globeImageUrl(solidGlobeTexture())
+        .globeImageUrl(TEXTURE)
         .backgroundColor(isDark ? "#0E0E0C" : "#FFFFFF")
         .backgroundImageUrl(null)
         .showAtmosphere(true)
-        .atmosphereColor(isDark ? "#D4BF9E" : "#A08060")
+        .atmosphereColor(isDark ? "#1a3a6e" : "#4a90d9")
         .atmosphereAltitude(0.15)
 
-        // ── Arcs — crisp white, high stroke, premium feel ─────────────────
+        // ── Arcs — premium #C3A984 light-trail ───────────────────────────
         .arcsData(arcData)
         .arcStartLat((d) => (d as ArcDatum).startLat)
         .arcStartLng((d) => (d as ArcDatum).startLng)
@@ -146,10 +137,10 @@ export default function GlobeInner({ routes, theme, onArcSelect, onCityHover }: 
             hoveredArcRef.current?.to === arc.to;
           return isHovered ? ARC_COLORS_HOVER : ARC_COLORS;
         })
-        .arcStroke(2.2)
-        .arcDashLength(0.35)
-        .arcDashGap(0.03)
-        .arcDashAnimateTime(1400)
+        .arcStroke(1.8)
+        .arcDashLength(0.32)
+        .arcDashGap(0.04)
+        .arcDashAnimateTime(1500)
         .arcDashInitialGap((d) => ((d as ArcDatum).distanceKm % 10) / 10)
         .arcLabel((d) => {
           const arc = d as ArcDatum;
@@ -170,7 +161,7 @@ export default function GlobeInner({ routes, theme, onArcSelect, onCityHover }: 
         .pointsData(pointData)
         .pointLat((d) => (d as PointDatum).lat)
         .pointLng((d) => (d as PointDatum).lng)
-        .pointColor(() => "rgba(255,255,255,1)")
+        .pointColor(() => "rgba(195,169,132,0.95)")
         .pointAltitude(0.008)
         .pointRadius((d) => 0.18 + ((d as PointDatum).connections / 12) * 0.22)
         .pointLabel((d) => {
