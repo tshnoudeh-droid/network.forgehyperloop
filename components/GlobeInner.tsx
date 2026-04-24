@@ -24,12 +24,12 @@ interface PointDatum extends City {
 }
 
 // ── Textures ─────────────────────────────────────────────────────────────────
-// Dark: NASA night-lights — city glow on dark ocean, perfect for hyperloop
-// Light: Blue marble — clear land/ocean contrast
+// Dark mode: blue marble (light globe against dark #0E0E0C background)
+// Light mode: night lights (dark/black globe against white background)
 const TEXTURE_DARK =
-  "https://unpkg.com/three-globe/example/img/earth-night.jpg";
-const TEXTURE_LIGHT =
   "https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg";
+const TEXTURE_LIGHT =
+  "https://unpkg.com/three-globe/example/img/earth-night.jpg";
 
 // ── Arc gradient — warm sand-gold, rich light-trail feel ────────────────────
 const ARC_COLORS_DARK = [
@@ -87,7 +87,7 @@ export default function GlobeInner({ routes, theme, onArcSelect, onCityHover }: 
     const tex = theme === "dark" ? TEXTURE_DARK : TEXTURE_LIGHT;
     globeRef.current.globeImageUrl(tex);
     globeRef.current.atmosphereColor(
-      theme === "dark" ? "#1a1a18" : "#d4c9bb"
+      theme === "dark" ? "#a8c4e0" : "#2a2a28"
     );
     globeRef.current.backgroundColor(
       theme === "dark" ? "#0E0E0C" : "#FFFFFF"
@@ -141,7 +141,7 @@ export default function GlobeInner({ routes, theme, onArcSelect, onCityHover }: 
         .backgroundColor(isDark ? "#0E0E0C" : "#FFFFFF")
         .backgroundImageUrl(null)
         .showAtmosphere(true)
-        .atmosphereColor(isDark ? "#1a1a18" : "#d4c9bb")
+        .atmosphereColor(isDark ? "#a8c4e0" : "#2a2a28")
         .atmosphereAltitude(0.15)
 
         // ── Arcs (premium light-trail style) ─────────────────────────────
