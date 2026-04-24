@@ -40,6 +40,20 @@ declare module "globe.gl" {
     onArcHover(fn: (arc: object | null) => void): GlobeInstance;
     arcLabel(fn: ((d: object) => string) | string): GlobeInstance;
 
+    // Labels
+    labelsData(data: object[]): GlobeInstance;
+    labelLat(fn: ((d: object) => number) | string): GlobeInstance;
+    labelLng(fn: ((d: object) => number) | string): GlobeInstance;
+    labelText(fn: ((d: object) => string) | string): GlobeInstance;
+    labelColor(fn: ((d: object) => string) | string): GlobeInstance;
+    labelSize(fn: ((d: object) => number) | number): GlobeInstance;
+    labelDotRadius(fn: ((d: object) => number) | number): GlobeInstance;
+    labelAltitude(fn: ((d: object) => number) | number): GlobeInstance;
+    labelResolution(res: number): GlobeInstance;
+    labelLabel(fn: ((d: object) => string) | string): GlobeInstance;
+    onLabelClick(fn: (label: object) => void): GlobeInstance;
+    onLabelHover(fn: (label: object | null) => void): GlobeInstance;
+
     // Controls
     controls(): { autoRotate: boolean; autoRotateSpeed: number; enableZoom: boolean };
     pointOfView(pov: { lat?: number; lng?: number; altitude?: number }, ms?: number): GlobeInstance;
