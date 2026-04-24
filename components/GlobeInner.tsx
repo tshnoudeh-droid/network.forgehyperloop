@@ -23,77 +23,34 @@ interface PointDatum extends City {
   connections: number;
 }
 
-// ── Texture processing ────────────────────────────────────────────────────────
-// One source texture; canvas-converted to white shades (dark mode) or
-// black shades (light mode) for maximum land/water contrast against bg.
-const BASE_TEXTURE =
-  "https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg";
+// ── Globe texture — solid #C3A984 on both modes ───────────────────────────────
+let solidTexCache: string | null = null;
 
-const textureCache = new Map<string, string>();
-
-async function buildGlobeTexture(lighten: boolean): Promise<string> {
-  const key = lighten ? "white" : "black";
-  if (textureCache.has(key)) return textureCache.get(key)!;
-
-  const img = await new Promise<HTMLImageElement>((resolve, reject) => {
-    const el = new Image();
-    el.crossOrigin = "anonymous";
-    el.onload = () => resolve(el);
-    el.onerror = reject;
-    el.src = BASE_TEXTURE;
-  });
-
+function solidGlobeTexture(): string {
+  if (solidTexCache) return solidTexCache;
   const canvas = document.createElement("canvas");
-  canvas.width = img.naturalWidth;
-  canvas.height = img.naturalHeight;
+  canvas.width = 4;
+  canvas.height = 4;
   const ctx = canvas.getContext("2d")!;
-  ctx.drawImage(img, 0, 0);
-
-  const d = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  const px = d.data;
-  for (let i = 0; i < px.length; i += 4) {
-    const lum = 0.299 * px[i] + 0.587 * px[i + 1] + 0.114 * px[i + 2];
-    // White shades: map to [125, 255] — always in the bright half
-    // Black shades: map to [0, 130]  — always in the dark half
-    const v = lighten
-      ? Math.round(125 + (lum / 255) * 130)
-      : Math.round((lum / 255) * 130);
-    px[i] = px[i + 1] = px[i + 2] = v;
-  }
-  ctx.putImageData(d, 0, 0);
-
-  const url = canvas.toDataURL("image/jpeg", 0.88);
-  textureCache.set(key, url);
-  return url;
+  ctx.fillStyle = "#C3A984";
+  ctx.fillRect(0, 0, 4, 4);
+  solidTexCache = canvas.toDataURL();
+  return solidTexCache;
 }
 
-// ── Arc gradient — warm sand-gold, rich light-trail feel ────────────────────
-const ARC_COLORS_DARK = [
-  "rgba(195,169,132,0)",
-  "rgba(195,169,132,0.25)",
-  "rgba(195,169,132,1)",
-  "rgba(195,169,132,0.25)",
-  "rgba(195,169,132,0)",
+// ── Arc colours — crisp white, dominant; hover inverts to #C3A984 ────────────
+const ARC_COLORS = [
+  "rgba(255,255,255,0)",
+  "rgba(255,255,255,0.92)",
+  "rgba(255,255,255,1)",
+  "rgba(255,255,255,0.92)",
+  "rgba(255,255,255,0)",
 ];
-const ARC_COLORS_LIGHT = [
+const ARC_COLORS_HOVER = [
   "rgba(195,169,132,0)",
-  "rgba(195,169,132,0.3)",
   "rgba(195,169,132,0.95)",
-  "rgba(195,169,132,0.3)",
-  "rgba(195,169,132,0)",
-];
-const ARC_COLORS_HOVER_DARK = [
-  "rgba(195,169,132,0)",
-  "rgba(195,169,132,0.5)",
-  "#E8D4B8",
-  "rgba(195,169,132,0.5)",
-  "rgba(195,169,132,0)",
-];
-const ARC_COLORS_HOVER_LIGHT = [
-  "rgba(195,169,132,0)",
-  "rgba(195,169,132,0.6)",
-  "#8B6F47",
-  "rgba(195,169,132,0.6)",
+  "#C3A984",
+  "rgba(195,169,132,0.95)",
   "rgba(195,169,132,0)",
 ];
 
@@ -117,16 +74,12 @@ export default function GlobeInner({ routes, theme, onArcSelect, onCityHover }: 
     themeRef.current = theme;
   }, [theme]);
 
-  // Update globe texture when theme changes
+  // Update bg / atmosphere when theme changes (globe texture is constant)
   useEffect(() => {
     if (!globeRef.current) return;
     const isDark = theme === "dark";
-    buildGlobeTexture(isDark).then((url) => {
-      if (!globeRef.current) return;
-      globeRef.current.globeImageUrl(url);
-      globeRef.current.atmosphereColor(isDark ? "#c8d8e8" : "#2a2a28");
-      globeRef.current.backgroundColor(isDark ? "#0E0E0C" : "#FFFFFF");
-    });
+    globeRef.current.atmosphereColor(isDark ? "#D4BF9E" : "#A08060");
+    globeRef.current.backgroundColor(isDark ? "#0E0E0C" : "#FFFFFF");
   }, [theme]);
 
   // Build arc + point data
@@ -168,19 +121,18 @@ export default function GlobeInner({ routes, theme, onArcSelect, onCityHover }: 
     (async () => {
       const GlobeLib = (await import("globe.gl")).default;
       const isDark = themeRef.current === "dark";
-      const texUrl = await buildGlobeTexture(isDark);
       const globe = GlobeLib();
 
       globe(mountRef.current!)
         // ── Appearance ───────────────────────────────────────────────────
-        .globeImageUrl(texUrl)
+        .globeImageUrl(solidGlobeTexture())
         .backgroundColor(isDark ? "#0E0E0C" : "#FFFFFF")
         .backgroundImageUrl(null)
         .showAtmosphere(true)
-        .atmosphereColor(isDark ? "#c8d8e8" : "#2a2a28")
+        .atmosphereColor(isDark ? "#D4BF9E" : "#A08060")
         .atmosphereAltitude(0.15)
 
-        // ── Arcs (premium light-trail style) ─────────────────────────────
+        // ── Arcs — crisp white, high stroke, premium feel ─────────────────
         .arcsData(arcData)
         .arcStartLat((d) => (d as ArcDatum).startLat)
         .arcStartLng((d) => (d as ArcDatum).startLng)
@@ -192,14 +144,12 @@ export default function GlobeInner({ routes, theme, onArcSelect, onCityHover }: 
           const isHovered =
             hoveredArcRef.current?.from === arc.from &&
             hoveredArcRef.current?.to === arc.to;
-          const dark = themeRef.current === "dark";
-          if (isHovered) return dark ? ARC_COLORS_HOVER_DARK : ARC_COLORS_HOVER_LIGHT;
-          return dark ? ARC_COLORS_DARK : ARC_COLORS_LIGHT;
+          return isHovered ? ARC_COLORS_HOVER : ARC_COLORS;
         })
-        .arcStroke(1.1)
-        .arcDashLength(0.22)
-        .arcDashGap(0.06)
-        .arcDashAnimateTime(1800)
+        .arcStroke(2.2)
+        .arcDashLength(0.35)
+        .arcDashGap(0.03)
+        .arcDashAnimateTime(1400)
         .arcDashInitialGap((d) => ((d as ArcDatum).distanceKm % 10) / 10)
         .arcLabel((d) => {
           const arc = d as ArcDatum;
@@ -220,7 +170,7 @@ export default function GlobeInner({ routes, theme, onArcSelect, onCityHover }: 
         .pointsData(pointData)
         .pointLat((d) => (d as PointDatum).lat)
         .pointLng((d) => (d as PointDatum).lng)
-        .pointColor(() => (themeRef.current === "dark" ? "rgba(195,169,132,0.95)" : "rgba(195,169,132,0.9)"))
+        .pointColor(() => "rgba(255,255,255,1)")
         .pointAltitude(0.008)
         .pointRadius((d) => 0.18 + ((d as PointDatum).connections / 12) * 0.22)
         .pointLabel((d) => {
