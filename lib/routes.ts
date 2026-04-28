@@ -171,8 +171,8 @@ const RAW_ROUTES: RawRoute[] = [
     from: "delhi",
     to: "dubai",
     phase: 2,
-    infraType: "overland",
-    tradeReason: "North India to Gulf corridor. 3.5M Indian workers in UAE generate $20B remittance + trade flows.",
+    infraType: "undersea_sft",
+    tradeReason: "North India to Gulf via Arabian Sea SFT. 3.5M Indian workers in UAE generate $20B remittance + trade flows. Connects inland Delhi to the same sea lane as Mumbai–Dubai.",
   },
   {
     from: "karachi",
@@ -380,18 +380,11 @@ const RAW_ROUTES: RawRoute[] = [
     tradeReason: "Great Lakes industrial corridor. Auto manufacturing belt. $120B/yr trade.",
   },
   {
-    from: "chicago",
-    to: "new_york",
-    phase: 5,
-    infraType: "overland",
-    tradeReason: "US Northeast-Midwest freight. Financial and industrial capitals linked.",
-  },
-  {
     from: "mexico_city",
     to: "buenos_aires",
     phase: 5,
-    infraType: "overland",
-    tradeReason: "Pan-American trunk route. Connects USMCA to Mercosur. $10B/yr and growing.",
+    infraType: "elevated_coastal",
+    tradeReason: "Pan-American Pacific coastal corridor. Follows the Pan-American Highway alignment through Guatemala, Colombia, Ecuador, Peru, Chile to Argentina. Connects USMCA to Mercosur. $10B/yr and growing.",
   },
 ];
 

@@ -12,6 +12,9 @@ import {
   ticketPriceUsd,
   co2AvoidedKgPerPassenger,
   co2NetworkComparator,
+  oceanTransitDays,
+  cargoTollPerPod,
+  cargoCo2AvoidedVsAir,
   formatHours,
   formatKm,
   formatUsd,
@@ -27,6 +30,13 @@ interface InfoSectionProps {
   totals: NetworkTotals;
   theme: Theme;
 }
+
+const INFRA_LABELS: Record<Route["infraType"], string> = {
+  overland: "Overland",
+  elevated_coastal: "Elevated Coastal",
+  undersea_sft: "Undersea SFT",
+  bridge_tunnel: "Bridge / Tunnel",
+};
 
 /* ── Stat tile (big number) ── */
 function StatTile({
@@ -163,6 +173,75 @@ function StatRow({
   );
 }
 
+/* ── Card section divider ── */
+function CardDivider({ label, theme }: { label: string; theme: Theme }) {
+  const isDark = theme === "dark";
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        margin: "18px 0 4px",
+      }}
+    >
+      <span
+        style={{
+          fontSize: "0.52rem",
+          fontWeight: 700,
+          letterSpacing: "0.16em",
+          textTransform: "uppercase",
+          color: "rgba(195,169,132,0.7)",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {label}
+      </span>
+      <div
+        style={{
+          flex: 1,
+          height: 1,
+          background: isDark ? "rgba(195,169,132,0.12)" : "rgba(195,169,132,0.2)",
+        }}
+      />
+    </div>
+  );
+}
+
+/* ── Text block row (for long prose like tradeReason) ── */
+function TextRow({ label, text, theme }: { label: string; text: string; theme: Theme }) {
+  const isDark = theme === "dark";
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 5,
+        padding: "12px 0",
+        borderBottom: `1px solid ${isDark ? "rgba(203,201,196,0.08)" : "rgba(14,14,12,0.07)"}`,
+      }}
+    >
+      <span
+        style={{
+          fontSize: "0.7rem",
+          color: isDark ? "rgba(203,201,196,0.6)" : "rgba(14,14,12,0.5)",
+        }}
+      >
+        {label}
+      </span>
+      <span
+        style={{
+          fontSize: "0.78rem",
+          color: isDark ? "rgba(203,201,196,0.85)" : "rgba(14,14,12,0.8)",
+          lineHeight: 1.6,
+        }}
+      >
+        {text}
+      </span>
+    </div>
+  );
+}
+
 export default function InfoSection({ selectedRoute, totals, theme }: InfoSectionProps) {
   const isDark = theme === "dark";
   const totalsRef = useFadeIn(0.1);
@@ -246,7 +325,7 @@ export default function InfoSection({ selectedRoute, totals, theme }: InfoSectio
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
           gap: 16,
-          marginBottom: 80,
+          marginBottom: selectedRoute ? 16 : 80,
         }}
       >
         {/* Route Analysis */}
@@ -271,6 +350,7 @@ export default function InfoSection({ selectedRoute, totals, theme }: InfoSectio
             </p>
             {selectedRoute ? (
               <>
+                {/* City header */}
                 <div style={{ marginBottom: 24 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
                     <span style={{ fontSize: "1.2rem" }}>{CITIES[selectedRoute.from].flag}</span>
@@ -286,13 +366,22 @@ export default function InfoSection({ selectedRoute, totals, theme }: InfoSectio
                     </span>
                   </div>
                 </div>
+
+                {/* Passenger stats */}
+                <CardDivider label="Passenger" theme={theme} />
                 <StatRow label="Hyperloop Time" value={formatHours(hyperloopTimeH(selectedRoute.distanceKm))} source="@ 1,000 km/h design spec" highlight theme={theme} />
                 <StatRow label="Aviation Time" value={formatHours(planeTimeH(selectedRoute.distanceKm))} source="@ 900 km/h + 3h overhead" theme={theme} />
                 <StatRow label="Time Saved" value={formatHours(timeSavedH(selectedRoute.distanceKm))} highlight theme={theme} />
                 <StatRow label="Est. Ticket" value={formatUsd(ticketPriceUsd(selectedRoute.distanceKm))} source="$0.10/km proxy" theme={theme} />
                 <StatRow label="Energy / Seat" value={formatKwh(energyPerSeatKwh(selectedRoute.distanceKm))} source="40 Wh/pax-km (Tandfonline 2020)" theme={theme} />
-                <StatRow label="CO₂ Avoided" value={formatCo2Kg(co2AvoidedKgPerPassenger(selectedRoute.distanceKm))} source="vs ICAO 0.255 kg/pax-km" highlight theme={theme} />
+                <StatRow label="CO₂ Avoided vs Flying" value={formatCo2Kg(co2AvoidedKgPerPassenger(selectedRoute.distanceKm))} source="vs ICAO 0.255 kg/pax-km" highlight theme={theme} />
                 <StatRow label="Distance" value={formatKm(selectedRoute.distanceKm)} theme={theme} />
+
+                {/* Cargo stats */}
+                <CardDivider label="Cargo" theme={theme} />
+                <StatRow label="Ocean Time Saved" value={`${oceanTransitDays(selectedRoute.distanceKm).toFixed(1)} days vs ocean`} source="vs 16-knot container ship" highlight theme={theme} />
+                <StatRow label="Toll Revenue / Pod" value={formatUsd(cargoTollPerPod(selectedRoute.distanceKm))} source="$0.05/t-km · 10t pod" theme={theme} />
+                <StatRow label="CO₂ Avoided vs Air Freight" value={formatCo2Kg(cargoCo2AvoidedVsAir(selectedRoute.distanceKm))} source="per 10t pod vs ICAO air cargo" highlight theme={theme} />
               </>
             ) : (
               <div
@@ -337,9 +426,69 @@ export default function InfoSection({ selectedRoute, totals, theme }: InfoSectio
             <StatRow label="Aviation CO₂" value="0.255 kg/pax-km" source="ICAO standard" theme={theme} />
             <StatRow label="Hyperloop CO₂" value="0.015 kg/pax-km" source="Springer (2023), renewables assumption" theme={theme} />
             <StatRow label="Ticket Proxy" value="$0.10 / km" source="Helsinki–Stockholm feasibility study" theme={theme} />
+            <StatRow label="Cargo Pod" value="10 t payload" source="dry pod design spec" theme={theme} />
+            <StatRow label="Air Cargo CO₂" value="0.602 kg/t-km" source="ICAO 2022 cargo factor" theme={theme} />
+            <StatRow label="Cargo Toll" value="$0.05 / t-km" source="port toll precedent — Singapore" theme={theme} />
+            <StatRow label="Ocean Speed" value="16 knots" source="avg container ship cruise speed" theme={theme} />
           </div>
         </TiltCard>
       </div>
+
+      {/* Route context — full-width, only when route selected */}
+      {selectedRoute && (
+        <TiltCard
+          tiltLimit={3}
+          scale={1.01}
+          className="glass-card fade-in delay-1"
+          style={{ display: "flex", flexDirection: "column", marginBottom: 80 }}
+        >
+          <div style={{ padding: "32px 28px", flex: 1 }}>
+            <p
+              style={{
+                fontSize: "0.58rem",
+                fontWeight: 700,
+                letterSpacing: "0.18em",
+                textTransform: "uppercase",
+                color: isDark ? "rgba(195,169,132,0.8)" : "rgba(195,169,132,0.9)",
+                marginBottom: 20,
+              }}
+            >
+              Route Context
+            </p>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "2fr 1fr",
+                gap: 32,
+                alignItems: "start",
+              }}
+            >
+              {/* Trade reason + purpose */}
+              <div>
+                <TextRow label="Trade Justification" text={selectedRoute.tradeReason} theme={theme} />
+                <TextRow
+                  label={`Origin — ${CITIES[selectedRoute.from].name}`}
+                  text={CITIES[selectedRoute.from].cargoRole}
+                  theme={theme}
+                />
+                <TextRow
+                  label={`Destination — ${CITIES[selectedRoute.to].name}`}
+                  text={CITIES[selectedRoute.to].cargoRole}
+                  theme={theme}
+                />
+              </div>
+
+              {/* Route metadata */}
+              <div>
+                <StatRow label="Build Phase" value={`Phase ${selectedRoute.phase}`} highlight theme={theme} />
+                <StatRow label="Infrastructure" value={INFRA_LABELS[selectedRoute.infraType]} theme={theme} />
+                <StatRow label="Distance" value={formatKm(selectedRoute.distanceKm)} theme={theme} />
+              </div>
+            </div>
+          </div>
+        </TiltCard>
+      )}
     </section>
   );
 }
