@@ -1,7 +1,7 @@
 /**
  * stats.ts — All stat formulas with locked source constants.
  *
- * Sources:
+ * Passenger sources:
  *   - HYPERLOOP_SPEED_KMH: 1000 km/h design spec target
  *     (CASIC T-Flight record: 623 km/h; system design spec: 1000 km/h)
  *   - PLANE_SPEED_KMH: 900 km/h average commercial cruise (range 880–926 km/h)
@@ -14,11 +14,21 @@
  *   - HYPERLOOP_CO2_KG_PKM: 0.015 kg CO₂/passenger-km
  *     (Springer, 2023 — renewables assumption, ~40% more efficient than aircraft)
  *   - AVG_SEATS: 28 passengers per hyperloop pod (design capacity estimate)
+ *
+ * Cargo sources:
+ *   - CARGO_POD_PAYLOAD_TONNES: 10t standard dry pod (Exhibit A design spec)
+ *   - AIR_CARGO_CO2_KG_PER_TONNE_KM: 0.602 kg (ICAO 2022 cargo emissions factor)
+ *   - OCEAN_CO2_KG_PER_TONNE_KM: 0.008 kg (IMO 2020 baseline)
+ *   - CARGO_TOLL_USD_PER_TONNE_KM: $0.05 — throughput toll model
+ *     (port toll precedent: Singapore charges $0.03–0.07/tonne)
+ *   - AIR_CARGO_TRANSIT_DAYS: 1–3 days including customs (IATA 2023)
+ *   - OCEAN_TRANSIT_DAYS_PER_1000KM: 2.5 days per 1,000 km (avg 16 knots)
  */
 
 // ── Constants ──────────────────────────────────────────────────────────────
 
 export const CONSTANTS = {
+  // Passenger
   HYPERLOOP_SPEED_KMH: 1000,
   PLANE_SPEED_KMH: 900,
   PLANE_OVERHEAD_H: 3,
@@ -27,6 +37,12 @@ export const CONSTANTS = {
   AVIATION_CO2_KG_PKM: 0.255,
   HYPERLOOP_CO2_KG_PKM: 0.015,
   AVG_SEATS: 28,
+  // Cargo
+  CARGO_POD_PAYLOAD_TONNES: 10,
+  AIR_CARGO_CO2_KG_PER_TONNE_KM: 0.602,
+  OCEAN_CO2_KG_PER_TONNE_KM: 0.008,
+  CARGO_TOLL_USD_PER_TONNE_KM: 0.05,
+  OCEAN_TRANSIT_DAYS_PER_1000KM: 2.5,
 } as const;
 
 // ── Per-route stats ────────────────────────────────────────────────────────
@@ -62,6 +78,28 @@ export function co2AvoidedKgPerPassenger(distanceKm: number): number {
     distanceKm *
     (CONSTANTS.AVIATION_CO2_KG_PKM - CONSTANTS.HYPERLOOP_CO2_KG_PKM)
   );
+}
+
+// ── Cargo functions ────────────────────────────────────────────────────────
+
+/** Ocean transit time in days for a given distance. */
+export function oceanTransitDays(distanceKm: number): number {
+  return (distanceKm / 1000) * CONSTANTS.OCEAN_TRANSIT_DAYS_PER_1000KM;
+}
+
+/** Throughput toll revenue per pod trip (USD). */
+export function cargoTollPerPod(distanceKm: number): number {
+  return distanceKm * CONSTANTS.CARGO_POD_PAYLOAD_TONNES * CONSTANTS.CARGO_TOLL_USD_PER_TONNE_KM;
+}
+
+/** CO₂ avoided vs air freight per pod trip (kg). */
+export function cargoCo2AvoidedVsAir(distanceKm: number): number {
+  return distanceKm * CONSTANTS.CARGO_POD_PAYLOAD_TONNES * CONSTANTS.AIR_CARGO_CO2_KG_PER_TONNE_KM;
+}
+
+/** CO₂ compared to ocean shipping per pod trip (kg). Ocean is lower — shows hyperloop is between air and ocean. */
+export function cargoCo2VsOcean(distanceKm: number): number {
+  return distanceKm * CONSTANTS.CARGO_POD_PAYLOAD_TONNES * CONSTANTS.OCEAN_CO2_KG_PER_TONNE_KM;
 }
 
 // ── Network totals ─────────────────────────────────────────────────────────
