@@ -17,6 +17,9 @@ import {
   energyPerSeatKwh,
   ticketPriceUsd,
   co2AvoidedKgPerPassenger,
+  oceanTransitDays,
+  cargoTollPerPod,
+  cargoCo2AvoidedVsAir,
   formatHours,
   formatKm,
   formatUsd,
@@ -274,6 +277,15 @@ function RouteHeader({ route }: { route: Route }) {
   );
 }
 
+// ── Infra type labels ─────────────────────────────────────────────────────────
+
+const INFRA_LABELS: Record<Route["infraType"], string> = {
+  overland: "Overland",
+  elevated_coastal: "Elevated Coastal",
+  undersea_sft: "Undersea SFT",
+  bridge_tunnel: "Bridge / Tunnel",
+};
+
 // ── Route stats ───────────────────────────────────────────────────────────────
 
 function RouteStats({ route }: { route: Route }) {
@@ -320,6 +332,37 @@ function RouteStats({ route }: { route: Route }) {
       <StatRow
         label="Route Distance"
         value={formatKm(d)}
+      />
+
+      <Divider label="Cargo" />
+      <StatRow
+        label="Trade Route"
+        value={route.tradeReason}
+      />
+      <StatRow
+        label="Infrastructure"
+        value={INFRA_LABELS[route.infraType]}
+      />
+      <StatRow
+        label="Build Phase"
+        value={`Phase ${route.phase}`}
+      />
+      <StatRow
+        label="Ocean Time Saved"
+        value={`${oceanTransitDays(d).toFixed(1)} days saved vs ocean`}
+        highlight
+        sub="vs 16-knot container ship"
+      />
+      <StatRow
+        label="Toll Revenue / Pod"
+        value={formatUsd(cargoTollPerPod(d))}
+        sub="$0.05/t-km throughput model"
+      />
+      <StatRow
+        label="CO₂ Avoided vs Air Freight"
+        value={formatCo2Kg(cargoCo2AvoidedVsAir(d))}
+        highlight
+        sub="per 10t pod vs ICAO air cargo factor"
       />
     </>
   );
