@@ -3,7 +3,7 @@
 import { useEffect, useRef, useCallback } from "react";
 import type { Route } from "@/lib/routes";
 import type { City, CityKey } from "@/lib/cities";
-import { CITIES, CITY_LIST } from "@/lib/cities";
+import { CITIES } from "@/lib/cities";
 import { arcAltitude } from "@/lib/geo";
 
 type Theme = "dark" | "light";
@@ -17,49 +17,20 @@ interface ArcDatum {
   endLng: number;
   altitude: number;
   distanceKm: number;
+  phase: 1 | 2 | 3 | 4 | 5;
 }
 
 interface PointDatum extends City {
   connections: number;
 }
 
-// ── Texture — blue marble on both modes ──────────────────────────────────────
 const TEXTURE =
   "https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg";
 
-const ARC_COLORS = ["rgba(195,169,132,0.95)", "rgba(195,169,132,0.95)"];
 const ARC_COLORS_HOVER = ["rgba(255,255,255,0.95)", "rgba(255,255,255,0.95)"];
 
-interface GlobeInnerProps {
-  routes: Route[];
-  theme: Theme;
-  onArcSelect: (route: Route | null) => void;
-  onCityHover: (city: City | null) => void;
-}
-
-export default function GlobeInner({ routes, theme, onArcSelect, onCityHover }: GlobeInnerProps) {
-  const mountRef = useRef<HTMLDivElement>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const globeRef = useRef<any>(null);
-  const hoveredArcRef = useRef<ArcDatum | null>(null);
-  const hasInteractedRef = useRef(false);
-  const themeRef = useRef(theme);
-
-  // Keep themeRef in sync
-  useEffect(() => {
-    themeRef.current = theme;
-  }, [theme]);
-
-  // Same texture both modes — only bg and atmosphere need updating
-  useEffect(() => {
-    if (!globeRef.current) return;
-    const isDark = theme === "dark";
-    globeRef.current.atmosphereColor(isDark ? "#1a3a6e" : "#4a90d9");
-    globeRef.current.backgroundColor(isDark ? "#0E0E0C" : "#FFFFFF");
-  }, [theme]);
-
-  // Build arc + point data
-  const arcData: ArcDatum[] = routes.map((r) => {
+function buildArcData(routes: Route[]): ArcDatum[] {
+  return routes.map((r) => {
     const a = CITIES[r.from];
     const b = CITIES[r.to];
     return {
@@ -71,18 +42,63 @@ export default function GlobeInner({ routes, theme, onArcSelect, onCityHover }: 
       endLng: b.lng,
       altitude: arcAltitude(r.distanceKm),
       distanceKm: r.distanceKm,
+      phase: r.phase,
     };
   });
+}
 
+function buildPointData(routes: Route[], cities: City[]): PointDatum[] {
   const connectionCount: Record<string, number> = {};
   for (const r of routes) {
     connectionCount[r.from] = (connectionCount[r.from] ?? 0) + 1;
     connectionCount[r.to] = (connectionCount[r.to] ?? 0) + 1;
   }
-  const pointData: PointDatum[] = CITY_LIST.map((c) => ({
+  return cities.map((c) => ({
     ...c,
     connections: connectionCount[c.id] ?? 0,
   }));
+}
+
+interface GlobeInnerProps {
+  routes: Route[];
+  cities: City[];
+  theme: Theme;
+  onArcSelect: (route: Route | null) => void;
+  onCityHover: (city: City | null) => void;
+}
+
+export default function GlobeInner({ routes, cities, theme, onArcSelect, onCityHover }: GlobeInnerProps) {
+  const mountRef = useRef<HTMLDivElement>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const globeRef = useRef<any>(null);
+  const hoveredArcRef = useRef<ArcDatum | null>(null);
+  const arcDataRef = useRef<ArcDatum[]>([]);
+  const hasInteractedRef = useRef(false);
+  const themeRef = useRef(theme);
+
+  // Keep themeRef in sync
+  useEffect(() => {
+    themeRef.current = theme;
+  }, [theme]);
+
+  // Theme changes — only bg and atmosphere need updating
+  useEffect(() => {
+    if (!globeRef.current) return;
+    const isDark = theme === "dark";
+    globeRef.current.atmosphereColor(isDark ? "#1a3a6e" : "#4a90d9");
+    globeRef.current.backgroundColor(isDark ? "#0E0E0C" : "#FFFFFF");
+  }, [theme]);
+
+  // Reactive update — re-apply arc + point + label data when routes or cities change
+  useEffect(() => {
+    if (!globeRef.current) return;
+    const newArcData = buildArcData(routes);
+    const newPointData = buildPointData(routes, cities);
+    arcDataRef.current = newArcData;
+    globeRef.current.arcsData(newArcData);
+    globeRef.current.pointsData(newPointData);
+    globeRef.current.labelsData(cities);
+  }, [routes, cities]);
 
   const stopAutoRotate = useCallback(() => {
     if (!hasInteractedRef.current && globeRef.current) {
@@ -93,6 +109,10 @@ export default function GlobeInner({ routes, theme, onArcSelect, onCityHover }: 
 
   useEffect(() => {
     if (!mountRef.current) return;
+
+    const initialArcData = buildArcData(routes);
+    const initialPointData = buildPointData(routes, cities);
+    arcDataRef.current = initialArcData;
 
     (async () => {
       const GlobeLib = (await import("globe.gl")).default;
@@ -109,7 +129,7 @@ export default function GlobeInner({ routes, theme, onArcSelect, onCityHover }: 
         .atmosphereAltitude(0.15)
 
         // ── Arcs — premium #C3A984 light-trail ───────────────────────────
-        .arcsData(arcData)
+        .arcsData(arcDataRef.current)
         .arcStartLat((d) => (d as ArcDatum).startLat)
         .arcStartLng((d) => (d as ArcDatum).startLng)
         .arcEndLat((d) => (d as ArcDatum).endLat)
@@ -120,7 +140,9 @@ export default function GlobeInner({ routes, theme, onArcSelect, onCityHover }: 
           const isHovered =
             hoveredArcRef.current?.from === arc.from &&
             hoveredArcRef.current?.to === arc.to;
-          return isHovered ? ARC_COLORS_HOVER : ARC_COLORS;
+          if (isHovered) return ARC_COLORS_HOVER;
+          const alpha = (0.95 - (arc.phase - 1) * 0.08).toFixed(2);
+          return [`rgba(195,169,132,${alpha})`, `rgba(195,169,132,${alpha})`];
         })
         .arcStroke(2.2)
         .arcDashLength(0.6)
@@ -135,7 +157,7 @@ export default function GlobeInner({ routes, theme, onArcSelect, onCityHover }: 
         })
         .onArcHover((arc) => {
           hoveredArcRef.current = arc as ArcDatum | null;
-          globe.arcsData([...arcData]);
+          globe.arcsData([...arcDataRef.current]);
         })
         .onArcClick((arc) => {
           const a = arc as ArcDatum;
@@ -143,7 +165,7 @@ export default function GlobeInner({ routes, theme, onArcSelect, onCityHover }: 
         })
 
         // ── City points ──────────────────────────────────────────────────
-        .pointsData(pointData)
+        .pointsData(initialPointData)
         .pointLat((d) => (d as PointDatum).lat)
         .pointLng((d) => (d as PointDatum).lng)
         .pointColor(() => "rgba(195,169,132,0.95)")
@@ -157,7 +179,7 @@ export default function GlobeInner({ routes, theme, onArcSelect, onCityHover }: 
         .onPointClick(() => onArcSelect(null))
 
         // ── City labels ──────────────────────────────────────────────────
-        .labelsData(CITY_LIST)
+        .labelsData(cities)
         .labelLat((d) => (d as City).lat)
         .labelLng((d) => (d as City).lng)
         .labelText((d) => (d as City).name)

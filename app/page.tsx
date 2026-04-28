@@ -7,10 +7,11 @@ import InfoSection from "@/components/InfoSection";
 import Footer from "@/components/Footer";
 import ThemeToggle from "@/components/ThemeToggle";
 import TopBar from "@/components/TopBar";
-import { ROUTES, type Route } from "@/lib/routes";
-import { CITIES } from "@/lib/cities";
+import { ROUTES, routesUpToPhase, type Route } from "@/lib/routes";
+import { CITIES, CITY_LIST } from "@/lib/cities";
 import type { City } from "@/lib/cities";
 import { computeNetworkTotals } from "@/lib/stats";
+import PhaseToggle, { type PhaseFilter } from "@/components/PhaseToggle";
 
 type Theme = "dark" | "light";
 
@@ -18,8 +19,21 @@ export default function Page() {
   const [theme, setTheme] = useState<Theme>("dark");
   const [selectedRoute, setSelectedRoute] = useState<Route | null>(null);
   const [, setHoveredCity] = useState<City | null>(null);
+  const [selectedPhase, setSelectedPhase] = useState<PhaseFilter>("all");
 
   const totals = useMemo(() => computeNetworkTotals(ROUTES), []);
+
+  const filteredRoutes = useMemo(
+    () => selectedPhase === "all" ? ROUTES : routesUpToPhase(selectedPhase),
+    [selectedPhase]
+  );
+
+  const filteredCities = useMemo(
+    () => selectedPhase === "all"
+      ? CITY_LIST
+      : CITY_LIST.filter((c) => c.phase <= selectedPhase),
+    [selectedPhase]
+  );
 
   // Sync theme to <html data-theme>
   useEffect(() => {
@@ -27,6 +41,13 @@ export default function Page() {
   }, [theme]);
 
   const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
+
+  const handlePhaseSelect = (p: PhaseFilter) => {
+    setSelectedPhase(p);
+    if (p !== "all" && selectedRoute && selectedRoute.phase > p) {
+      setSelectedRoute(null);
+    }
+  };
 
   return (
     <>
@@ -50,9 +71,13 @@ export default function Page() {
         {/* Branding overlay */}
         <TopBar totals={totals} />
 
+        {/* Phase filter toggle — top-center */}
+        <PhaseToggle selected={selectedPhase} onSelect={handlePhaseSelect} theme={theme} />
+
         {/* Globe fills full section */}
         <Globe
-          routes={ROUTES}
+          routes={filteredRoutes}
+          cities={filteredCities}
           theme={theme}
           onArcSelect={setSelectedRoute}
           onCityHover={setHoveredCity}

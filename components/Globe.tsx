@@ -30,15 +30,17 @@ const GlobeInner = dynamic(() => import("./GlobeInner"), {
 
 interface GlobeProps {
   routes: Route[];
+  cities: City[];
   theme: Theme;
   onArcSelect: (route: Route | null) => void;
   onCityHover: (city: City | null) => void;
 }
 
-export default function Globe({ routes, theme, onArcSelect, onCityHover }: GlobeProps) {
+export default function Globe({ routes, cities, theme, onArcSelect, onCityHover }: GlobeProps) {
   return (
     <GlobeInner
       routes={routes}
+      cities={cities}
       theme={theme}
       onArcSelect={onArcSelect}
       onCityHover={onCityHover}
