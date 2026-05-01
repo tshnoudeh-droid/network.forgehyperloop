@@ -158,10 +158,10 @@ export default function GlobeInner({ routes, cities, theme, onArcSelect, onCityH
           if (isHovered) return ["#FFFFFF", "#FFFFFF"];
           return ["#FFFFFF", "#FFFFFF"];
         })
-        .arcStroke((d) => ((d as ArcDatum).isLight ? 1.8 : 0.6))
-        .arcDashLength((d) => ((d as ArcDatum).isLight ? 0.3 : 1))
-        .arcDashGap((d) => ((d as ArcDatum).isLight ? 2 : 0))
-        .arcDashAnimateTime((d) => ((d as ArcDatum).isLight ? 2000 : 0))
+        .arcStroke((d) => ((d as ArcDatum).isLight ? 2.5 : 1.2))
+        .arcDashLength((d) => ((d as ArcDatum).isLight ? 0.1 : 1))
+        .arcDashGap((d) => ((d as ArcDatum).isLight ? 0.9 : 0))
+        .arcDashAnimateTime((d) => ((d as ArcDatum).isLight ? 4000 : 0))
         .arcDashInitialGap((d) => ((d as ArcDatum).distanceKm % 10) / 10)
         .arcLabel((d) => {
           const arc = d as ArcDatum;
