@@ -18,6 +18,7 @@ interface ArcDatum {
   altitude: number;
   distanceKm: number;
   phase: 1 | 2 | 3 | 4 | 5;
+  isLight?: boolean;
 }
 
 interface PointDatum extends City {
@@ -30,10 +31,11 @@ const TEXTURE =
 const ARC_COLORS_HOVER = ["rgba(255,255,255,0.95)", "rgba(255,255,255,0.95)"];
 
 function buildArcData(routes: Route[]): ArcDatum[] {
-  return routes.map((r) => {
+  const data: ArcDatum[] = [];
+  routes.forEach((r) => {
     const a = CITIES[r.from];
     const b = CITIES[r.to];
-    return {
+    const base = {
       from: r.from,
       to: r.to,
       startLat: a.lat,
@@ -44,7 +46,10 @@ function buildArcData(routes: Route[]): ArcDatum[] {
       distanceKm: r.distanceKm,
       phase: r.phase,
     };
+    data.push({ ...base, isLight: false });
+    data.push({ ...base, isLight: true });
   });
+  return data;
 }
 
 function buildPointData(routes: Route[], cities: City[]): PointDatum[] {
@@ -98,6 +103,15 @@ export default function GlobeInner({ routes, cities, theme, onArcSelect, onCityH
     globeRef.current.arcsData(newArcData);
     globeRef.current.pointsData(newPointData);
     globeRef.current.labelsData(cities);
+
+    if (cities.length > 0) {
+      let latSum = 0;
+      let lngSum = 0;
+      cities.forEach(c => { latSum += c.lat; lngSum += c.lng; });
+      const avgLat = latSum / cities.length;
+      const avgLng = lngSum / cities.length;
+      globeRef.current.pointOfView({ lat: avgLat, lng: avgLng, altitude: 2.1 }, 1000);
+    }
   }, [routes, cities]);
 
   const stopAutoRotate = useCallback(() => {
@@ -128,7 +142,7 @@ export default function GlobeInner({ routes, cities, theme, onArcSelect, onCityH
         .atmosphereColor(isDark ? "#1a3a6e" : "#4a90d9")
         .atmosphereAltitude(0.15)
 
-        // ── Arcs — premium #C3A984 light-trail ───────────────────────────
+        // ── Arcs — premium white light-trail ───────────────────────────
         .arcsData(arcDataRef.current)
         .arcStartLat((d) => (d as ArcDatum).startLat)
         .arcStartLng((d) => (d as ArcDatum).startLng)
@@ -140,14 +154,19 @@ export default function GlobeInner({ routes, cities, theme, onArcSelect, onCityH
           const isHovered =
             hoveredArcRef.current?.from === arc.from &&
             hoveredArcRef.current?.to === arc.to;
+            
+          if (arc.isLight) {
+            return ["rgba(255,255,255,0.9)", "rgba(255,255,255,0.1)"];
+          }
+          
           if (isHovered) return ARC_COLORS_HOVER;
-          const alpha = (0.95 - (arc.phase - 1) * 0.08).toFixed(2);
-          return [`rgba(195,169,132,${alpha})`, `rgba(195,169,132,${alpha})`];
+          const alpha = (0.25 - (arc.phase - 1) * 0.05).toFixed(2);
+          return [`rgba(255,255,255,${alpha})`, `rgba(255,255,255,${alpha})`];
         })
-        .arcStroke(2.2)
-        .arcDashLength(0.6)
-        .arcDashGap(0.02)
-        .arcDashAnimateTime(1500)
+        .arcStroke(null)
+        .arcDashLength((d) => ((d as ArcDatum).isLight ? 0.3 : 1))
+        .arcDashGap((d) => ((d as ArcDatum).isLight ? 2 : 0))
+        .arcDashAnimateTime((d) => ((d as ArcDatum).isLight ? 2000 : 0))
         .arcDashInitialGap((d) => ((d as ArcDatum).distanceKm % 10) / 10)
         .arcLabel((d) => {
           const arc = d as ArcDatum;
