@@ -156,14 +156,14 @@ export default function GlobeInner({ routes, cities, theme, onArcSelect, onCityH
             hoveredArcRef.current?.to === arc.to;
             
           if (arc.isLight) {
-            return ["rgba(255,255,255,0.9)", "rgba(255,255,255,0.1)"];
+            return ["rgba(255,255,255,1)", "rgba(255,255,255,0.2)"];
           }
           
           if (isHovered) return ARC_COLORS_HOVER;
           const alpha = (0.25 - (arc.phase - 1) * 0.05).toFixed(2);
           return [`rgba(255,255,255,${alpha})`, `rgba(255,255,255,${alpha})`];
         })
-        .arcStroke(null)
+        .arcStroke((d) => ((d as ArcDatum).isLight ? 8.0 : 4.0))
         .arcDashLength((d) => ((d as ArcDatum).isLight ? 0.3 : 1))
         .arcDashGap((d) => ((d as ArcDatum).isLight ? 2 : 0))
         .arcDashAnimateTime((d) => ((d as ArcDatum).isLight ? 2000 : 0))
