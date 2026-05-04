@@ -39,6 +39,20 @@ interface StarSprite {
 const TEXTURE =
   "https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg";
 
+const GLOBE_RADIUS = 100;
+
+/** Matches three-globe's internal polar2Cartesian exactly so sprites land on arcs */
+function polar2Cartesian(lat: number, lng: number, altitude: number): THREE.Vector3 {
+  const phi = (90 - lat) * Math.PI / 180;
+  const theta = (lng - 180) * Math.PI / 180;
+  const r = GLOBE_RADIUS * (1 + altitude);
+  return new THREE.Vector3(
+    -r * Math.sin(phi) * Math.cos(theta),
+    r * Math.cos(phi),
+    r * Math.sin(phi) * Math.sin(theta),
+  );
+}
+
 function buildArcData(routes: Route[]): ArcDatum[] {
   return routes.map((r) => {
     const a = CITIES[r.from];
@@ -302,8 +316,7 @@ export default function GlobeInner({
           const lat = s.startLat + (s.endLat - s.startLat) * s.t;
           const lng = lerpLng(s.startLng, s.endLng, s.t);
           const altitude = s.altitude * Math.sin(Math.PI * s.t);
-          const coords = globe.getCoords(lat, lng, altitude);
-          s.sprite.position.set(coords.x, coords.y, coords.z);
+          s.sprite.position.copy(polar2Cartesian(lat, lng, altitude));
         });
       }
       animate();
