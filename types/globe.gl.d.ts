@@ -60,6 +60,13 @@ declare module "globe.gl" {
     width(w: number): GlobeInstance;
     height(h: number): GlobeInstance;
 
+    // Custom layer
+    customLayerData(data: object[]): GlobeInstance;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    customThreeObject(fn: ((d: object) => any) | any): GlobeInstance;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    customThreeObjectUpdate(fn: (obj: any, d: object) => void): GlobeInstance;
+
     // Renderer
     renderer(): { domElement: HTMLCanvasElement };
     scene(): import('three').Scene;
