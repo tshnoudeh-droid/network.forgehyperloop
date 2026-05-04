@@ -156,12 +156,12 @@ export default function GlobeInner({ routes, cities, theme, onArcSelect, onCityH
             hoveredArcRef.current?.to === arc.to;
 
           if (arc.isLight) return ["rgba(255,255,255,1)", "rgba(255,255,255,1)"];
-          if (isHovered) return ["rgba(255,255,255,0.9)", "rgba(255,255,255,0.9)"];
-          return ["rgba(255,255,255,0.3)", "rgba(255,255,255,0.3)"];
+          if (isHovered) return ["rgba(255,255,255,1)", "rgba(255,255,255,1)"];
+          return ["rgba(255,255,255,1)", "rgba(255,255,255,1)"];
         })
-        .arcStroke((d) => ((d as ArcDatum).isLight ? 4.5 : 0.7))
-        .arcDashLength((d) => ((d as ArcDatum).isLight ? 0.018 : 1))
-        .arcDashGap((d) => ((d as ArcDatum).isLight ? 0.982 : 0))
+        .arcStroke((d) => ((d as ArcDatum).isLight ? 7 : 1.6))
+        .arcDashLength((d) => ((d as ArcDatum).isLight ? 0.004 : 1))
+        .arcDashGap((d) => ((d as ArcDatum).isLight ? 0.996 : 0))
         .arcDashAnimateTime((d) => ((d as ArcDatum).isLight ? 3500 : 0))
         .arcDashInitialGap((d) => ((d as ArcDatum).distanceKm % 10) / 10)
         .arcLabel((d) => {
