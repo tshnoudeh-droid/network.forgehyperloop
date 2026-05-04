@@ -159,9 +159,9 @@ export default function GlobeInner({
             ? ["rgba(255,255,255,0.95)", "rgba(255,255,255,0.95)"]
             : ["rgba(255,255,255,0.55)", "rgba(255,255,255,0.55)"];
         })
-        .arcStroke((d) => ((d as ArcDatum).isLight ? 2.5 : 1.5))
-        .arcDashLength((d) => ((d as ArcDatum).isLight ? 0.15 : 1))
-        .arcDashGap((d) => ((d as ArcDatum).isLight ? 0.85 : 0))
+        .arcStroke((d) => ((d as ArcDatum).isLight ? 4 : 1.5))
+        .arcDashLength((d) => ((d as ArcDatum).isLight ? 0.03 : 1))
+        .arcDashGap((d) => ((d as ArcDatum).isLight ? 0.97 : 0))
         .arcDashAnimateTime((d) => ((d as ArcDatum).isLight ? 2200 : 0))
         .arcDashInitialGap((d) =>
           (d as ArcDatum).isLight ? ((d as ArcDatum).distanceKm % 100) / 100 : 0
