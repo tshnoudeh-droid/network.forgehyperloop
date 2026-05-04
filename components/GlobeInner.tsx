@@ -154,14 +154,15 @@ export default function GlobeInner({ routes, cities, theme, onArcSelect, onCityH
           const isHovered =
             hoveredArcRef.current?.from === arc.from &&
             hoveredArcRef.current?.to === arc.to;
-            
-          if (isHovered) return ["#FFFFFF", "#FFFFFF"];
-          return ["#FFFFFF", "#FFFFFF"];
+
+          if (arc.isLight) return ["rgba(255,255,255,1)", "rgba(255,255,255,1)"];
+          if (isHovered) return ["rgba(255,255,255,0.9)", "rgba(255,255,255,0.9)"];
+          return ["rgba(255,255,255,0.3)", "rgba(255,255,255,0.3)"];
         })
-        .arcStroke((d) => ((d as ArcDatum).isLight ? 2.5 : 1.2))
-        .arcDashLength((d) => ((d as ArcDatum).isLight ? 0.1 : 1))
-        .arcDashGap((d) => ((d as ArcDatum).isLight ? 0.9 : 0))
-        .arcDashAnimateTime((d) => ((d as ArcDatum).isLight ? 4000 : 0))
+        .arcStroke((d) => ((d as ArcDatum).isLight ? 4.5 : 0.7))
+        .arcDashLength((d) => ((d as ArcDatum).isLight ? 0.018 : 1))
+        .arcDashGap((d) => ((d as ArcDatum).isLight ? 0.982 : 0))
+        .arcDashAnimateTime((d) => ((d as ArcDatum).isLight ? 3500 : 0))
         .arcDashInitialGap((d) => ((d as ArcDatum).distanceKm % 10) / 10)
         .arcLabel((d) => {
           const arc = d as ArcDatum;
