@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useCallback } from "react";
-import * as THREE from "three";
 import type { Route } from "@/lib/routes";
 import type { City, CityKey } from "@/lib/cities";
 import { CITIES } from "@/lib/cities";
@@ -19,20 +18,7 @@ interface ArcDatum {
   altitude: number;
   distanceKm: number;
   phase: 1 | 2 | 3 | 4 | 5;
-}
-
-interface SphereData {
-  id: string;
-  lat: number;
-  lng: number;
-  altitude: number;
-  startLat: number;
-  startLng: number;
-  endLat: number;
-  endLng: number;
-  maxAlt: number;
-  t: number;
-  speed: number;
+  isLight: boolean;
 }
 
 interface PointDatum extends City {
@@ -43,10 +29,11 @@ const TEXTURE =
   "https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg";
 
 function buildArcData(routes: Route[]): ArcDatum[] {
-  return routes.map((r) => {
+  const data: ArcDatum[] = [];
+  routes.forEach((r) => {
     const a = CITIES[r.from];
     const b = CITIES[r.to];
-    return {
+    const base = {
       from: r.from,
       to: r.to,
       startLat: a.lat,
@@ -57,7 +44,10 @@ function buildArcData(routes: Route[]): ArcDatum[] {
       distanceKm: r.distanceKm,
       phase: r.phase,
     };
+    data.push({ ...base, isLight: false });
+    data.push({ ...base, isLight: true });
   });
+  return data;
 }
 
 function buildPointData(routes: Route[], cities: City[]): PointDatum[] {
@@ -67,35 +57,6 @@ function buildPointData(routes: Route[], cities: City[]): PointDatum[] {
     connectionCount[r.to] = (connectionCount[r.to] ?? 0) + 1;
   }
   return cities.map((c) => ({ ...c, connections: connectionCount[c.id] ?? 0 }));
-}
-
-function lerpLng(a: number, b: number, t: number): number {
-  let diff = b - a;
-  if (diff > 180) diff -= 360;
-  if (diff < -180) diff += 360;
-  return a + diff * t;
-}
-
-function buildSphereData(routes: Route[]): SphereData[] {
-  return routes.map((r) => {
-    const a = CITIES[r.from];
-    const b = CITIES[r.to];
-    const t0 = Math.random();
-    const maxAlt = arcAltitude(r.distanceKm);
-    return {
-      id: `${r.from}-${r.to}`,
-      lat: a.lat + (b.lat - a.lat) * t0,
-      lng: lerpLng(a.lng, b.lng, t0),
-      altitude: maxAlt * Math.sin(Math.PI * t0),
-      startLat: a.lat,
-      startLng: a.lng,
-      endLat: b.lat,
-      endLng: b.lng,
-      maxAlt,
-      t: t0,
-      speed: 0.00022 + Math.random() * 0.00016,
-    };
-  });
 }
 
 interface GlobeInnerProps {
@@ -118,10 +79,8 @@ export default function GlobeInner({
   const globeRef = useRef<any>(null);
   const hoveredArcRef = useRef<ArcDatum | null>(null);
   const arcDataRef = useRef<ArcDatum[]>([]);
-  const sphereDataRef = useRef<SphereData[]>([]);
   const hasInteractedRef = useRef(false);
   const themeRef = useRef(theme);
-  const rafRef = useRef<number>(0);
 
   useEffect(() => {
     themeRef.current = theme;
@@ -138,13 +97,10 @@ export default function GlobeInner({
     if (!globeRef.current) return;
     const newArcData = buildArcData(routes);
     const newPointData = buildPointData(routes, cities);
-    const newSphereData = buildSphereData(routes);
     arcDataRef.current = newArcData;
-    sphereDataRef.current = newSphereData;
     globeRef.current.arcsData(newArcData);
     globeRef.current.pointsData(newPointData);
     globeRef.current.labelsData(cities);
-    globeRef.current.customLayerData(newSphereData);
 
     if (cities.length > 0) {
       let latSum = 0, lngSum = 0;
@@ -168,18 +124,12 @@ export default function GlobeInner({
 
     const initialArcData = buildArcData(routes);
     const initialPointData = buildPointData(routes, cities);
-    const initialSphereData = buildSphereData(routes);
     arcDataRef.current = initialArcData;
-    sphereDataRef.current = initialSphereData;
 
     (async () => {
       const GlobeLib = (await import("globe.gl")).default;
       const isDark = themeRef.current === "dark";
       const globe = GlobeLib();
-
-      // Shared sphere geometry + material (reused across all instances)
-      const sphereGeo = new THREE.SphereGeometry(1.5, 16, 16);
-      const sphereMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
       globe(mountRef.current!)
         // ── Appearance ───────────────────────────────────────────────────
@@ -190,7 +140,9 @@ export default function GlobeInner({
         .atmosphereColor(isDark ? "#1a3a6e" : "#4a90d9")
         .atmosphereAltitude(0.15)
 
-        // ── Arcs — solid white base lines ────────────────────────────────
+        // ── Arcs ─────────────────────────────────────────────────────────
+        // isLight=false: solid white base line
+        // isLight=true:  bright traveling cylinder showing route direction
         .arcsData(arcDataRef.current)
         .arcStartLat((d) => (d as ArcDatum).startLat)
         .arcStartLng((d) => (d as ArcDatum).startLng)
@@ -202,15 +154,18 @@ export default function GlobeInner({
           const isHovered =
             hoveredArcRef.current?.from === arc.from &&
             hoveredArcRef.current?.to === arc.to;
+          if (arc.isLight) return ["rgba(255,255,255,1)", "rgba(255,255,255,1)"];
           return isHovered
-            ? ["rgba(255,255,255,1)", "rgba(255,255,255,1)"]
-            : ["rgba(255,255,255,0.7)", "rgba(255,255,255,0.7)"];
+            ? ["rgba(255,255,255,0.95)", "rgba(255,255,255,0.95)"]
+            : ["rgba(255,255,255,0.55)", "rgba(255,255,255,0.55)"];
         })
-        .arcStroke(1.5)
-        .arcDashLength(1)
-        .arcDashGap(0)
-        .arcDashAnimateTime(0)
-        .arcDashInitialGap(0)
+        .arcStroke((d) => ((d as ArcDatum).isLight ? 2.5 : 1.5))
+        .arcDashLength((d) => ((d as ArcDatum).isLight ? 0.15 : 1))
+        .arcDashGap((d) => ((d as ArcDatum).isLight ? 0.85 : 0))
+        .arcDashAnimateTime((d) => ((d as ArcDatum).isLight ? 2200 : 0))
+        .arcDashInitialGap((d) =>
+          (d as ArcDatum).isLight ? ((d as ArcDatum).distanceKm % 100) / 100 : 0
+        )
         .arcLabel((d) => {
           const arc = d as ArcDatum;
           const a = CITIES[arc.from];
@@ -226,15 +181,6 @@ export default function GlobeInner({
           onArcSelect(
             routes.find((r) => r.from === a.from && r.to === a.to) ?? null
           );
-        })
-
-        // ── Traveling spheres ────────────────────────────────────────────
-        .customLayerData(sphereDataRef.current)
-        .customThreeObject(() => new THREE.Mesh(sphereGeo, sphereMat))
-        .customThreeObjectUpdate((obj, d) => {
-          const s = d as SphereData;
-          const { x, y, z } = globe.getCoords(s.lat, s.lng, s.altitude);
-          (obj as THREE.Object3D).position.set(x, y, z);
         })
 
         // ── City points ──────────────────────────────────────────────────
@@ -269,21 +215,6 @@ export default function GlobeInner({
 
       globe.pointOfView({ lat: 22, lng: 12, altitude: 2.1 }, 0);
       globeRef.current = globe;
-
-      // Animate sphere positions by updating customLayerData each frame.
-      // globe.gl re-calls customThreeObjectUpdate which uses globe.getCoords
-      // — same coordinate system as arcs, guaranteed on-line positioning.
-      function animate() {
-        rafRef.current = requestAnimationFrame(animate);
-        sphereDataRef.current.forEach((s) => {
-          s.t = (s.t + s.speed) % 1;
-          s.lat = s.startLat + (s.endLat - s.startLat) * s.t;
-          s.lng = lerpLng(s.startLng, s.endLng, s.t);
-          s.altitude = s.maxAlt * Math.sin(Math.PI * s.t);
-        });
-        globe.customLayerData([...sphereDataRef.current]);
-      }
-      animate();
     })();
 
     const el = mountRef.current;
@@ -299,7 +230,6 @@ export default function GlobeInner({
     if (el) resizeObserver.observe(el);
 
     return () => {
-      cancelAnimationFrame(rafRef.current);
       el?.removeEventListener("pointerdown", stopAutoRotate);
       resizeObserver.disconnect();
       globeRef.current = null;
