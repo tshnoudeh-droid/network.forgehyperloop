@@ -62,8 +62,11 @@ declare module "globe.gl" {
 
     // Renderer
     renderer(): { domElement: HTMLCanvasElement };
-    scene(): object;
+    scene(): import('three').Scene;
     camera(): object;
+
+    // Coordinate helpers
+    getCoords(lat: number, lng: number, altitude?: number): { x: number; y: number; z: number };
   }
 
   function Globe(): GlobeInstance;
