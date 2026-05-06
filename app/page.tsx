@@ -162,15 +162,27 @@ export default function Page() {
               <br />
               {CITIES[selectedRoute.to].flag} {CITIES[selectedRoute.to].name}
             </div>
-            <span
+            <button
+              onClick={() => document.getElementById("info")?.scrollIntoView({ behavior: "smooth" })}
               style={{
+                background: "rgba(195,169,132,0.12)",
+                border: "1px solid rgba(195,169,132,0.3)",
+                borderRadius: 6,
+                cursor: "pointer",
                 fontSize: "0.58rem",
+                fontWeight: 600,
                 letterSpacing: "0.1em",
-                color: theme === "dark" ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.3)",
+                textTransform: "uppercase",
+                color: "rgba(195,169,132,0.9)",
+                padding: "6px 12px",
+                width: "100%",
+                transition: "background 0.2s",
               }}
+              onMouseEnter={e => (e.currentTarget.style.background = "rgba(195,169,132,0.22)")}
+              onMouseLeave={e => (e.currentTarget.style.background = "rgba(195,169,132,0.12)")}
             >
-              ↓ Scroll for details
-            </span>
+              ↓ View details
+            </button>
             <button
               onClick={() => setSelectedRoute(null)}
               style={{
