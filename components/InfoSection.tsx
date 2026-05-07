@@ -374,14 +374,15 @@ export default function InfoSection({ selectedRoute, totals, theme }: InfoSectio
                 <StatRow label="Time Saved" value={formatHours(timeSavedH(selectedRoute.distanceKm))} highlight theme={theme} />
                 <StatRow label="Est. Ticket" value={formatUsd(ticketPriceUsd(selectedRoute.distanceKm))} source="$0.10/km proxy" theme={theme} />
                 <StatRow label="Energy / Seat" value={formatKwh(energyPerSeatKwh(selectedRoute.distanceKm))} source="40 Wh/pax-km (Tandfonline 2020)" theme={theme} />
-                <StatRow label="CO₂ Avoided vs Flying" value={formatCo2Kg(co2AvoidedKgPerPassenger(selectedRoute.distanceKm))} source="vs ICAO 0.255 kg/pax-km" highlight theme={theme} />
+                <StatRow label="CO₂ Avoided vs Flying" value={formatCo2Kg(co2AvoidedKgPerPassenger(selectedRoute.distanceKm))} source="vs ICAO 0.163 kg/pax-km" highlight theme={theme} />
                 <StatRow label="Distance" value={formatKm(selectedRoute.distanceKm)} theme={theme} />
 
                 {/* Cargo stats */}
                 <CardDivider label="Cargo" theme={theme} />
                 <StatRow label="Ocean Time Saved" value={`${oceanTransitDays(selectedRoute.distanceKm).toFixed(1)} days vs ocean`} source="vs 16-knot container ship" highlight theme={theme} />
-                <StatRow label="Toll Revenue / Pod" value={formatUsd(cargoTollPerPod(selectedRoute.distanceKm))} source="$0.05/t-km · 10t pod" theme={theme} />
-                <StatRow label="CO₂ Avoided vs Air Freight" value={formatCo2Kg(cargoCo2AvoidedVsAir(selectedRoute.distanceKm))} source="per 10t pod vs ICAO air cargo" highlight theme={theme} />
+                <StatRow label="Toll Revenue / Pod" value={formatUsd(cargoTollPerPod(selectedRoute.distanceKm))} source="$50/tonne · 20t pod" theme={theme} />
+                <StatRow label="CO₂ Avoided vs Air Freight" value={formatCo2Kg(cargoCo2AvoidedVsAir(selectedRoute.distanceKm))} source="per 20t pod vs ICAO air cargo" highlight theme={theme} />
+                <StatRow label="CO₂ saved per cargo pod vs air" value={`${(cargoCo2AvoidedVsAir(selectedRoute.distanceKm) / 1000).toFixed(1)} t CO₂`} source="0.602 kg/t-km × 20t pod ÷ 1,000" theme={theme} />
               </>
             ) : (
               <div
@@ -421,14 +422,16 @@ export default function InfoSection({ selectedRoute, totals, theme }: InfoSectio
             <StatRow label="Pod Speed" value="1,000 km/h" source="system design spec / CASIC T-Flight benchmark" theme={theme} />
             <StatRow label="Aviation Speed" value="900 km/h" source="avg commercial cruise (880–926 km/h)" theme={theme} />
             <StatRow label="Airport Overhead" value="3 hours" source="standard boarding / security estimate" theme={theme} />
-            <StatRow label="Pod Capacity" value="28 seats" source="design capacity estimate" theme={theme} />
+            <StatRow label="Pod Capacity" value="28–40 seats" source="NASA/MDPI hyperloop passenger pod studies" theme={theme} />
             <StatRow label="Energy" value="40 Wh/pax-km" source="Tandfonline (2020)" theme={theme} />
-            <StatRow label="Aviation CO₂" value="0.255 kg/pax-km" source="ICAO standard" theme={theme} />
-            <StatRow label="Hyperloop CO₂" value="0.015 kg/pax-km" source="Springer (2023), renewables assumption" theme={theme} />
+            <StatRow label="Aviation CO₂" value="0.163 kg/pax-km" source="ICAO 2023 passenger factor" theme={theme} />
+            <StatRow label="Hyperloop CO₂" value="<0.008 kg/pax-km" source="Springer (2023), renewables assumption" theme={theme} />
             <StatRow label="Ticket Proxy" value="$0.10 / km" source="Helsinki–Stockholm feasibility study" theme={theme} />
-            <StatRow label="Cargo Pod" value="10 t payload" source="dry pod design spec" theme={theme} />
+            <StatRow label="Cargo Pod" value="20 t payload" source="standard dry pod, 1× 20ft container equivalent" theme={theme} />
             <StatRow label="Air Cargo CO₂" value="0.602 kg/t-km" source="ICAO 2022 cargo factor" theme={theme} />
-            <StatRow label="Cargo Toll" value="$0.05 / t-km" source="port toll precedent — Singapore" theme={theme} />
+            <StatRow label="Cargo CO₂ (Hyperloop)" value="~0 g/t-km" source="renewable grid assumption" theme={theme} />
+            <StatRow label="Operating Pressure" value="100 Pa" source="Hyperloop Alpha; EHC Venlo 2024" theme={theme} />
+            <StatRow label="Cargo Toll" value="$50 / tonne" source="per-tonne toll, port toll precedent" theme={theme} />
             <StatRow label="Ocean Speed" value="16 knots" source="avg container ship cruise speed" theme={theme} />
           </div>
         </TiltCard>

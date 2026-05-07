@@ -327,7 +327,7 @@ function RouteStats({ route }: { route: Route }) {
         label="CO₂ Avoided vs Flying"
         value={formatCo2Kg(co2AvoidedKgPerPassenger(d))}
         highlight
-        sub="per passenger vs ICAO 0.255 kg/km"
+        sub="per passenger vs ICAO 0.163 kg/km"
       />
       <StatRow
         label="Route Distance"
@@ -356,13 +356,18 @@ function RouteStats({ route }: { route: Route }) {
       <StatRow
         label="Toll Revenue / Pod"
         value={formatUsd(cargoTollPerPod(d))}
-        sub="$0.05/t-km throughput model"
+        sub="$50/tonne · 20t pod"
       />
       <StatRow
         label="CO₂ Avoided vs Air Freight"
         value={formatCo2Kg(cargoCo2AvoidedVsAir(d))}
         highlight
-        sub="per 10t pod vs ICAO air cargo factor"
+        sub="per 20t pod vs ICAO air cargo factor"
+      />
+      <StatRow
+        label="CO₂ saved per cargo pod vs air"
+        value={`${(cargoCo2AvoidedVsAir(d) / 1000).toFixed(1)} t CO₂`}
+        sub="0.602 kg/t-km × 20t pod ÷ 1,000"
       />
     </>
   );
@@ -423,7 +428,7 @@ function NetworkStats({ totals }: { totals: NetworkTotals }) {
 
       <Divider label="Design Constants" />
       <StatRow label="Pod Speed" value="1,000 km/h" sub="system design spec" />
-      <StatRow label="Pod Capacity" value="28 seats" sub="design estimate" />
+      <StatRow label="Pod Capacity" value="28–40 seats" sub="NASA/MDPI hyperloop pod studies" />
       <StatRow
         label="Energy"
         value="40 Wh/pax-km"
@@ -431,7 +436,7 @@ function NetworkStats({ totals }: { totals: NetworkTotals }) {
       />
       <StatRow
         label="Hyperloop CO₂"
-        value="0.015 kg/pax-km"
+        value="<0.008 kg/pax-km"
         sub="Springer 2023, renewables"
       />
     </>

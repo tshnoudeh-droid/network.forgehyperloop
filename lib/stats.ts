@@ -10,17 +10,17 @@
  *     (Tandfonline, 2020 — peer-reviewed hyperloop energy study)
  *   - TICKET_USD_PER_KM: $0.10/km proxy
  *     (based on ~$20–25 Helsinki–Stockholm ~250 km feasibility study)
- *   - AVIATION_CO2_KG_PKM: 0.255 kg CO₂/passenger-km (ICAO standard)
- *   - HYPERLOOP_CO2_KG_PKM: 0.015 kg CO₂/passenger-km
- *     (Springer, 2023 — renewables assumption, ~40% more efficient than aircraft)
- *   - AVG_SEATS: 28 passengers per hyperloop pod (design capacity estimate)
+ *   - AVIATION_CO2_KG_PKM: 0.163 kg CO₂/passenger-km (ICAO 2023 passenger factor)
+ *   - HYPERLOOP_CO2_KG_PKM: 0.008 kg CO₂/passenger-km (upper bound; <0.008 with full renewables)
+ *     (Springer, 2023 — renewables assumption)
+ *   - AVG_SEATS: 28 passengers per hyperloop pod (28–40 range; 28 used for calculation)
+ *     (NASA/MDPI hyperloop passenger pod studies)
  *
  * Cargo sources:
- *   - CARGO_POD_PAYLOAD_TONNES: 10t standard dry pod (Exhibit A design spec)
+ *   - CARGO_POD_PAYLOAD_TONNES: 20t standard dry pod (1× 20ft container equivalent)
  *   - AIR_CARGO_CO2_KG_PER_TONNE_KM: 0.602 kg (ICAO 2022 cargo emissions factor)
  *   - OCEAN_CO2_KG_PER_TONNE_KM: 0.008 kg (IMO 2020 baseline)
- *   - CARGO_TOLL_USD_PER_TONNE_KM: $0.05 — throughput toll model
- *     (port toll precedent: Singapore charges $0.03–0.07/tonne)
+ *   - CARGO_TOLL_USD_PER_TONNE: $50/tonne flat — per-tonne toll, port toll precedent
  *   - AIR_CARGO_TRANSIT_DAYS: 1–3 days including customs (IATA 2023)
  *   - OCEAN_TRANSIT_DAYS_PER_1000KM: 2.5 days per 1,000 km (avg 16 knots)
  */
@@ -34,14 +34,14 @@ export const CONSTANTS = {
   PLANE_OVERHEAD_H: 3,
   ENERGY_WH_PER_PKM: 40,
   TICKET_USD_PER_KM: 0.10,
-  AVIATION_CO2_KG_PKM: 0.255,
-  HYPERLOOP_CO2_KG_PKM: 0.015,
+  AVIATION_CO2_KG_PKM: 0.163,
+  HYPERLOOP_CO2_KG_PKM: 0.008,
   AVG_SEATS: 28,
   // Cargo
-  CARGO_POD_PAYLOAD_TONNES: 10,
+  CARGO_POD_PAYLOAD_TONNES: 20,
   AIR_CARGO_CO2_KG_PER_TONNE_KM: 0.602,
   OCEAN_CO2_KG_PER_TONNE_KM: 0.008,
-  CARGO_TOLL_USD_PER_TONNE_KM: 0.05,
+  CARGO_TOLL_USD_PER_TONNE: 50,
   OCEAN_TRANSIT_DAYS_PER_1000KM: 2.5,
 } as const;
 
@@ -87,9 +87,9 @@ export function oceanTransitDays(distanceKm: number): number {
   return (distanceKm / 1000) * CONSTANTS.OCEAN_TRANSIT_DAYS_PER_1000KM;
 }
 
-/** Throughput toll revenue per pod trip (USD). */
-export function cargoTollPerPod(distanceKm: number): number {
-  return distanceKm * CONSTANTS.CARGO_POD_PAYLOAD_TONNES * CONSTANTS.CARGO_TOLL_USD_PER_TONNE_KM;
+/** Toll revenue per pod trip (USD). Flat per-tonne rate, distance-independent. */
+export function cargoTollPerPod(_distanceKm: number): number {
+  return CONSTANTS.CARGO_POD_PAYLOAD_TONNES * CONSTANTS.CARGO_TOLL_USD_PER_TONNE;
 }
 
 /** CO₂ avoided vs air freight per pod trip (kg). */
