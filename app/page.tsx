@@ -15,6 +15,39 @@ import PhaseToggle, { type PhaseFilter } from "@/components/PhaseToggle";
 
 type Theme = "dark" | "light";
 
+const PHASE_DETAILS: Record<number, { title: string; timeline: string; description: string; keyFact: string }> = {
+  1: {
+    title: "Asian Spine",
+    timeline: "2030 – 2040",
+    description: "Shanghai to Singapore via Tokyo, Seoul, Hong Kong, and Bangkok — the world's highest-volume manufacturing corridor. Links East Asia's three largest economies with Southeast Asia, eliminating the region's most congested air and sea lanes. No undersea tunnels longer than 200 km required in this phase.",
+    keyFact: "~40% of global manufactured goods flow through this corridor",
+  },
+  2: {
+    title: "South & West Asia",
+    timeline: "2035 – 2045",
+    description: "Extends west from Singapore through Mumbai into Dubai, bridging the Indian Ocean manufacturing belt. India's industrial growth corridor from Chennai to Mumbai becomes a hyperloop export artery. The Palk Strait crossing is the first major undersea SFT segment, validating the technology for longer ocean crossings ahead.",
+    keyFact: "First undersea SFT segment — Palk Strait as proof of concept",
+  },
+  3: {
+    title: "Europe & Africa",
+    timeline: "2040 – 2050",
+    description: "Branches north from Dubai through Cairo, then spans Sub-Saharan Africa via Lagos to Johannesburg. The network's most transformative phase — connecting a continent with no existing intercontinental fixed-link infrastructure. A 4,200 km Sahara overland segment routes through established oil infrastructure corridors.",
+    keyFact: "Unlocks $2T+ in previously landlocked African resource exports",
+  },
+  4: {
+    title: "Transatlantic",
+    timeline: "2048 – 2060",
+    description: "First fixed crossing of the Atlantic via a submerged floating tunnel anchored to the Azores seamount chain. The Azores waypoint splits the span into two manageable 2,800 km sections, each proven by earlier phases. New York to London in under 4 hours — the two largest financial centres connected by zero-carbon freight.",
+    keyFact: "New York → London in under 4 hours",
+  },
+  5: {
+    title: "Transpacific & Completion",
+    timeline: "2055 – 2070",
+    description: "Los Angeles to Tokyo via deep-ocean SFT, then onward to Sydney — closing the global loop back into Phase 1's Asian network. The Transpacific span crosses the deepest oceanic trench system on Earth. Loop closure enables full network redundancy: any city can reach any other via two independent paths.",
+    keyFact: "Global loop complete — full network redundancy achieved",
+  },
+};
+
 export default function Page() {
   const [theme, setTheme] = useState<Theme>("dark");
   const [selectedRoute, setSelectedRoute] = useState<Route | null>(null);
@@ -73,6 +106,108 @@ export default function Page() {
 
         {/* Phase filter toggle — top-center */}
         <PhaseToggle selected={selectedPhase} onSelect={handlePhaseSelect} theme={theme} />
+
+        {/* Left-side phase description panel */}
+        {selectedPhase !== "all" && (() => {
+          const detail = PHASE_DETAILS[selectedPhase as number];
+          return detail ? (
+            <div
+              style={{
+                position: "absolute",
+                left: 24,
+                top: "50%",
+                transform: "translateY(-50%)",
+                background: theme === "dark" ? "rgba(14,14,12,0.80)" : "rgba(255,255,255,0.88)",
+                backdropFilter: "blur(16px)",
+                WebkitBackdropFilter: "blur(16px)",
+                border: "1px solid rgba(195,169,132,0.25)",
+                borderRadius: 12,
+                padding: "24px 28px",
+                width: 280,
+                zIndex: 20,
+                display: "flex",
+                flexDirection: "column",
+                gap: 14,
+              }}
+            >
+              {/* Phase label */}
+              <span
+                style={{
+                  fontSize: "0.52rem",
+                  letterSpacing: "0.22em",
+                  textTransform: "uppercase",
+                  color: "rgba(195,169,132,0.8)",
+                  fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif",
+                }}
+              >
+                Phase {selectedPhase}
+              </span>
+
+              {/* Title */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                <span
+                  style={{
+                    fontSize: "1.15rem",
+                    fontWeight: 700,
+                    letterSpacing: "-0.01em",
+                    color: theme === "dark" ? "#ffffff" : "#0E0E0C",
+                    lineHeight: 1.2,
+                    fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif",
+                  }}
+                >
+                  {detail.title}
+                </span>
+                <span
+                  style={{
+                    fontSize: "0.62rem",
+                    fontFamily: '"SF Mono", "JetBrains Mono", ui-monospace, monospace',
+                    color: "rgba(195,169,132,0.75)",
+                    letterSpacing: "0.06em",
+                  }}
+                >
+                  {detail.timeline}
+                </span>
+              </div>
+
+              {/* Divider */}
+              <div style={{ height: 1, background: "rgba(195,169,132,0.15)" }} />
+
+              {/* Long description */}
+              <p
+                style={{
+                  fontSize: "0.75rem",
+                  color: theme === "dark" ? "rgba(203,201,196,0.78)" : "rgba(14,14,12,0.72)",
+                  lineHeight: 1.7,
+                  margin: 0,
+                  fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif",
+                }}
+              >
+                {detail.description}
+              </p>
+
+              {/* Key fact */}
+              <div
+                style={{
+                  background: "rgba(195,169,132,0.08)",
+                  border: "1px solid rgba(195,169,132,0.2)",
+                  borderRadius: 6,
+                  padding: "10px 14px",
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: "0.65rem",
+                    color: "#C3A984",
+                    lineHeight: 1.5,
+                    fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif",
+                  }}
+                >
+                  {detail.keyFact}
+                </span>
+              </div>
+            </div>
+          ) : null;
+        })()}
 
         {/* Globe fills full section */}
         <Globe

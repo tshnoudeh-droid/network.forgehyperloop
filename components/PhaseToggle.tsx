@@ -97,10 +97,10 @@ export default function PhaseToggle({ selected, onSelect, theme }: PhaseTogglePr
       {description && (
         <div
           style={{
-            fontSize: "0.48rem",
-            letterSpacing: "0.1em",
+            fontSize: "0.65rem",
+            letterSpacing: "0.08em",
             textTransform: "uppercase",
-            color: isDark ? "rgba(195,169,132,0.6)" : "rgba(195,169,132,0.75)",
+            color: isDark ? "rgba(195,169,132,0.7)" : "rgba(195,169,132,0.85)",
             whiteSpace: "nowrap",
             pointerEvents: "none",
             fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif",
